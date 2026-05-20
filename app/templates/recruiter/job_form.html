@@ -1,0 +1,83 @@
+{% extends 'base.html' %}
+{% block title %}{{ 'Edit' if job else 'Post' }} Job – Smart Resume Analyser{% endblock %}
+{% block content %}
+<div class="container py-5 mt-4">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="card border-0 shadow-sm p-4 rounded-4">
+                <div class="mb-4">
+                    <a href="{{ url_for('recruiter.jobs') }}" class="btn btn-outline-secondary btn-sm mb-3"><i class="bi bi-arrow-left"></i> Back to Jobs</a>
+                    <h2 class="fw-bold mb-0">
+                        <img src="https://img.icons8.com/fluency/32/{{ 'edit' if job else 'job' }}.png" alt="">
+                        {{ 'Edit Job Posting' if job else 'Post a New Job' }}
+                    </h2>
+                </div>
+                <form method="POST">
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label class="form-label fw-semibold">Job Title *</label>
+                            <input type="text" class="form-control" name="title" value="{{ job.title if job else '' }}" placeholder="e.g. Senior Data Scientist" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label fw-semibold">Company Name *</label>
+                            <input type="text" class="form-control" name="company" value="{{ job.company if job else '' }}" placeholder="Company name" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label fw-semibold">Location</label>
+                            <input type="text" class="form-control" name="location" value="{{ job.location if job else '' }}" placeholder="e.g. Remote, Bangalore, Delhi">
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label fw-semibold">Job Type</label>
+                            <select name="job_type" class="form-select">
+                                {% for jt in ['Full-time', 'Part-time', 'Contract', 'Internship', 'Remote'] %}
+                                <option value="{{ jt }}" {% if job and job.job_type == jt %}selected{% endif %}>{{ jt }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="col-12">
+                            <label class="form-label fw-semibold">Job Description</label>
+                            <textarea class="form-control" name="description" rows="5" placeholder="Describe the role, responsibilities, and requirements...">{{ job.description if job else '' }}</textarea>
+                        </div>
+                        <div class="col-12">
+                            <label class="form-label fw-semibold">Required Skills * <small class="text-muted fw-normal">(comma-separated)</small></label>
+                            <input type="text" class="form-control" name="required_skills" value="{{ job.required_skills|join(', ') if job else '' }}" placeholder="e.g. Python, TensorFlow, SQL, Machine Learning" required>
+                        </div>
+                        <div class="col-12">
+                            <label class="form-label fw-semibold">Preferred Skills <small class="text-muted fw-normal">(comma-separated)</small></label>
+                            <input type="text" class="form-control" name="preferred_skills" value="{{ job.preferred_skills|join(', ') if job else '' }}" placeholder="e.g. Spark, Kubernetes, AWS">
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label fw-semibold">Min. Experience (yrs)</label>
+                            <input type="number" class="form-control" name="experience_min" value="{{ job.experience_min if job else 0 }}" min="0" max="30">
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label fw-semibold">Max. Experience (yrs)</label>
+                            <input type="number" class="form-control" name="experience_max" value="{{ job.experience_max if job else 10 }}" min="0" max="40">
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label fw-semibold">Salary Range</label>
+                            <input type="text" class="form-control" name="salary_range" value="{{ job.salary_range if job else '' }}" placeholder="e.g. 8-15 LPA">
+                        </div>
+                        <div class="col-md-8">
+                            <label class="form-label fw-semibold">Education Required</label>
+                            <input type="text" class="form-control" name="education_required" value="{{ job.education_required if job else '' }}" placeholder="e.g. B.Tech/BE in CS or related field">
+                        </div>
+                        <div class="col-md-4 d-flex align-items-end">
+                            <div class="form-check form-switch ms-2 mb-3">
+                                <input class="form-check-input" type="checkbox" name="is_active" id="isActive" {% if not job or job.is_active %}checked{% endif %}>
+                                <label class="form-check-label" for="isActive">Active Job Posting</label>
+                            </div>
+                        </div>
+                        <div class="col-12 mt-2">
+                            <button type="submit" class="btn btn-warning btn-lg w-100 fw-semibold">
+                                <img src="https://img.icons8.com/fluency/22/save.png" alt=""> {{ 'Update Job' if job else 'Post Job' }}
+                            </button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

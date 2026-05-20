@@ -1,0 +1,68 @@
+{% extends 'base.html' %}
+{% block title %}Create Account – Smart Resume Analyser{% endblock %}
+{% block content %}
+<section class="auth-section">
+    <div class="container">
+        <div class="row justify-content-center align-items-center min-vh-100">
+            <div class="col-lg-5 col-md-8">
+                <div class="auth-card animate__animated animate__fadeInUp">
+                    <div class="auth-header text-center mb-4">
+                        <img src="https://img.icons8.com/fluency/64/add-user-male.png" alt="Register" class="auth-logo mb-3">
+                        <h2 class="auth-title">Create Account</h2>
+                        <p class="auth-subtitle text-muted">Start your AI-powered career journey</p>
+                    </div>
+                    <form method="POST" class="auth-form">
+                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                        <div class="form-group mb-3">
+                            <label for="name" class="form-label">
+                                <img src="https://img.icons8.com/fluency/18/user-male-circle.png" alt=""> Full Name
+                            </label>
+                            <input type="text" class="form-control" id="name" name="name" value="{{ name or '' }}" placeholder="Enter your full name" required>
+                        </div>
+                        <div class="form-group mb-3">
+                            <label for="email" class="form-label">
+                                <img src="https://img.icons8.com/fluency/18/email.png" alt=""> Email Address
+                            </label>
+                            <input type="email" class="form-control" id="email" name="email" value="{{ email or '' }}" placeholder="Enter your email" required>
+                        </div>
+                        <div class="form-group mb-3">
+                            <label for="password" class="form-label">
+                                <img src="https://img.icons8.com/fluency/18/lock.png" alt=""> Password
+                            </label>
+                            <div class="password-input-wrapper position-relative">
+                                <input type="password" class="form-control" id="password" name="password" placeholder="Min. 8 chars, 1 upper, 1 lower, 1 number" required>
+                                <button type="button" class="password-toggle btn btn-sm position-absolute top-50 end-0 translate-middle-y me-2 border-0 bg-transparent" onclick="togglePassword('password')">
+                                    <i class="bi bi-eye"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="form-group mb-4">
+                            <label for="confirm_password" class="form-label">
+                                <img src="https://img.icons8.com/fluency/18/lock-2.png" alt=""> Confirm Password
+                            </label>
+                            <div class="password-input-wrapper position-relative">
+                                <input type="password" class="form-control" id="confirm_password" name="confirm_password" placeholder="Re-enter your password" required>
+                                <button type="button" class="password-toggle btn btn-sm position-absolute top-50 end-0 translate-middle-y me-2 border-0 bg-transparent" onclick="togglePassword('confirm_password')">
+                                    <i class="bi bi-eye"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <button type="submit" class="btn btn-primary w-100 btn-lg">
+                            <img src="https://img.icons8.com/fluency/20/add-user-male.png" alt=""> Create Account
+                        </button>
+                    </form>
+                    <div class="auth-divider my-3 text-center text-muted"><small>or</small></div>
+                    <div class="text-center">
+                        <p class="mb-2">Already have an account? <a href="{{ url_for('auth.login') }}" class="fw-semibold">Sign in</a></p>
+                        <p class="mb-0">
+                            <a href="{{ url_for('auth.recruiter_login') }}" class="text-warning fw-semibold small">
+                                <img src="https://img.icons8.com/fluency/16/human-resources.png" alt=""> Login as Recruiter
+                            </a>
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

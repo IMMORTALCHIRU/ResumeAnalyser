@@ -1,0 +1,292 @@
+{% extends 'base.html' %}
+
+{% block title %}Smart Resume Analyser – AI-Powered Career Platform{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<section class="hero-section">
+    <div class="hero-bg"></div>
+    <div class="container">
+        <div class="row align-items-center min-vh-100">
+            <div class="col-lg-6 hero-content">
+                <span class="hero-badge animate__animated animate__fadeInDown">
+                    <img src="https://img.icons8.com/fluency/24/artificial-intelligence.png" alt="AI"> AI-Powered Resume Analysis
+                </span>
+                <h1 class="hero-title animate__animated animate__fadeInUp">
+                    Land Your Dream Job with <span class="gradient-text">Smart Resume AI</span>
+                </h1>
+                <p class="hero-subtitle animate__animated animate__fadeInUp animate__delay-1s">
+                    Upload your resume, get an AI-powered score, discover your skill gaps, and match with the best job opportunities — all in one place.
+                </p>
+                <div class="hero-actions animate__animated animate__fadeInUp animate__delay-2s">
+                    {% if current_user.is_authenticated %}
+                        {% if current_user.is_recruiter %}
+                        <a href="{{ url_for('recruiter.dashboard') }}" class="btn btn-primary btn-lg">
+                            <img src="https://img.icons8.com/fluency/24/dashboard.png" alt=""> Recruiter Dashboard
+                        </a>
+                        {% else %}
+                        <a href="{{ url_for('user_dashboard.dashboard') }}" class="btn btn-primary btn-lg">
+                            <img src="https://img.icons8.com/fluency/24/dashboard.png" alt=""> My Dashboard
+                        </a>
+                        {% endif %}
+                    {% else %}
+                    <a href="{{ url_for('auth.register') }}" class="btn btn-primary btn-lg">
+                        <img src="https://img.icons8.com/fluency/24/add-user-male.png" alt=""> Get Started Free
+                    </a>
+                    <a href="{{ url_for('auth.login') }}" class="btn btn-outline-light btn-lg">
+                        <i class="bi bi-box-arrow-in-right"></i> Sign In
+                    </a>
+                    {% endif %}
+                </div>
+                <div class="hero-stats animate__animated animate__fadeInUp animate__delay-3s">
+                    <div class="stat-item">
+                        <span class="stat-number">10K+</span>
+                        <span class="stat-label">Resumes Analysed</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-number">500+</span>
+                        <span class="stat-label">Jobs Posted</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-number">92%</span>
+                        <span class="stat-label">Match Accuracy</span>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-6 hero-visual">
+                <div class="hero-image-wrapper animate__animated animate__fadeInRight">
+                    <div class="floating-card card-1">
+                        <img src="https://img.icons8.com/fluency/36/resume.png" alt="Resume">
+                        <span>Resume Score: 87%</span>
+                    </div>
+                    <div class="floating-card card-2">
+                        <img src="https://img.icons8.com/fluency/36/checkmark--v1.png" alt="Match">
+                        <span>5 Job Matches Found</span>
+                    </div>
+                    <div class="floating-card card-3">
+                        <img src="https://img.icons8.com/?size=100&id=0TpLlNiCMZfw&format=png&color=000000" alt="Skills">
+                        <span>Skill Gap: 3 Skills</span>
+                    </div>
+                    <img src="../static/1.png" alt="Interview" class="hero-main-image">
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="hero-scroll-indicator">
+        <i class="bi bi-chevron-double-down"></i>
+    </div>
+</section>
+
+<!-- Two Module Section -->
+<section class="modules-section py-5 bg-light">
+    <div class="container">
+        <div class="section-header text-center mb-5">
+            <span class="section-badge">
+                <img src="https://img.icons8.com/fluency/20/user-group-man-man.png" alt=""> Two Portals
+            </span>
+            <h2 class="section-title">Built for <span class="gradient-text">Everyone</span></h2>
+            <p class="section-subtitle">Separate, purpose-built portals for candidates and recruiters.</p>
+        </div>
+        <div class="row g-4 justify-content-center">
+            <div class="col-lg-5">
+                <div class="module-card h-100 p-4 rounded-4 shadow-sm">
+                    <div class="module-icon mb-3">
+                        <img src="https://img.icons8.com/fluency/64/student-male.png" alt="Candidate">
+                    </div>
+                    <h3 class="fw-bold mb-2">Candidate Portal</h3>
+                    <p class="text-muted mb-3">For job seekers who want to stand out.</p>
+                    <ul class="list-unstyled mb-4">
+                        <li class="mb-2"><img src="https://img.icons8.com/fluency/18/checkmark--v1.png" alt=""> Upload PDF / DOCX resume</li>
+                        <li class="mb-2"><img src="https://img.icons8.com/fluency/18/checkmark--v1.png" alt=""> AI resume score & detailed feedback</li>
+                        <li class="mb-2"><img src="https://img.icons8.com/fluency/18/checkmark--v1.png" alt=""> Skill gap analysis & recommendations</li>
+                        <li class="mb-2"><img src="https://img.icons8.com/fluency/18/checkmark--v1.png" alt=""> Personalised job matches</li>
+                        <li class="mb-2"><img src="https://img.icons8.com/fluency/18/checkmark--v1.png" alt=""> Resume history & analysis reports</li>
+                    </ul>
+                    <a href="{{ url_for('auth.register') }}" class="btn btn-primary w-100">
+                        <img src="https://img.icons8.com/fluency/20/resume.png" alt=""> Start Analysing
+                    </a>
+                </div>
+            </div>
+            <div class="col-lg-5">
+                <div class="module-card h-100 p-4 rounded-4 shadow-sm module-card-recruiter">
+                    <div class="module-icon mb-3">
+                        <img src="https://img.icons8.com/fluency/64/human-resources.png" alt="Recruiter">
+                    </div>
+                    <h3 class="fw-bold mb-2">Recruiter Portal</h3>
+                    <p class="text-muted mb-3">For HR teams who want to hire smarter.</p>
+                    <ul class="list-unstyled mb-4">
+                        <li class="mb-2"><img src="https://img.icons8.com/fluency/18/checkmark--v1.png" alt=""> View & filter all applicant resumes</li>
+                        <li class="mb-2"><img src="https://img.icons8.com/fluency/18/checkmark--v1.png" alt=""> AI-powered resume-job matching</li>
+                        <li class="mb-2"><img src="https://img.icons8.com/fluency/18/checkmark--v1.png" alt=""> Post jobs with required skills</li>
+                        <li class="mb-2"><img src="https://img.icons8.com/fluency/18/checkmark--v1.png" alt=""> Shortlist & manage candidates</li>
+                        <li class="mb-2"><img src="https://img.icons8.com/fluency/18/checkmark--v1.png" alt=""> Analytics dashboard & statistics</li>
+                    </ul>
+                    <a href="{{ url_for('auth.recruiter_login') }}" class="btn btn-warning w-100">
+                        <img src="https://img.icons8.com/fluency/20/human-resources.png" alt=""> Recruiter Login
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Features Section -->
+<section class="features-section py-5" id="features">
+    <div class="container">
+        <div class="section-header text-center mb-5">
+            <span class="section-badge">
+                <img src="https://img.icons8.com/fluency/20/star.png" alt=""> Features
+            </span>
+            <h2 class="section-title">Everything You Need to <span class="gradient-text">Succeed</span></h2>
+            <p class="section-subtitle">Powered by AI to give you the competitive edge</p>
+        </div>
+        <div class="row g-4">
+            <div class="col-lg-4 col-md-6">
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <img src="https://img.icons8.com/fluency/64/parse-from-clipboard.png" alt="">
+                    </div>
+                    <h3 class="feature-title">AI Resume Analysis</h3>
+                    <p class="feature-description">Instant feedback with AI-driven scoring for content, formatting, and ATS compatibility.</p>
+                    <ul class="feature-list">
+                        <li><img src="https://img.icons8.com/fluency/16/checkmark--v1.png" alt=""> Resume score (0-100)</li>
+                        <li><img src="https://img.icons8.com/fluency/16/checkmark--v1.png" alt=""> ATS compatibility</li>
+                        <li><img src="https://img.icons8.com/fluency/16/checkmark--v1.png" alt=""> Formatting analysis</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="col-lg-4 col-md-6">
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <img src="https://img.icons8.com/fluency/64/graph.png" alt="">
+                    </div>
+                    <h3 class="feature-title">Skill Gap Analysis</h3>
+                    <p class="feature-description">Identify missing skills for your target role and get curated learning recommendations.</p>
+                    <ul class="feature-list">
+                        <li><img src="https://img.icons8.com/fluency/16/checkmark--v1.png" alt=""> Field-specific gaps</li>
+                        <li><img src="https://img.icons8.com/fluency/16/checkmark--v1.png" alt=""> Course suggestions</li>
+                        <li><img src="https://img.icons8.com/fluency/16/checkmark--v1.png" alt=""> Improvement roadmap</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="col-lg-4 col-md-6">
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <img src="https://img.icons8.com/fluency/64/job.png" alt="">
+                    </div>
+                    <h3 class="feature-title">Smart Job Matching</h3>
+                    <p class="feature-description">AI matches your resume against live job postings with percentage-based scores.</p>
+                    <ul class="feature-list">
+                        <li><img src="https://img.icons8.com/fluency/16/checkmark--v1.png" alt=""> Match percentage score</li>
+                        <li><img src="https://img.icons8.com/fluency/16/checkmark--v1.png" alt=""> Matched & missing skills</li>
+                        <li><img src="https://img.icons8.com/fluency/16/checkmark--v1.png" alt=""> Experience alignment</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="col-lg-4 col-md-6">
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <img src="https://img.icons8.com/fluency/64/conference-call.png" alt="">
+                    </div>
+                    <h3 class="feature-title">Recruiter Dashboard</h3>
+                    <p class="feature-description">Full applicant pool view with filters, scores, and AI-generated candidate rankings.</p>
+                    <ul class="feature-list">
+                        <li><img src="https://img.icons8.com/fluency/16/checkmark--v1.png" alt=""> Candidate filtering</li>
+                        <li><img src="https://img.icons8.com/fluency/16/checkmark--v1.png" alt=""> AI candidate ranking</li>
+                        <li><img src="https://img.icons8.com/fluency/16/checkmark--v1.png" alt=""> Shortlisting tools</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="col-lg-4 col-md-6">
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <img src="https://img.icons8.com/fluency/64/security-checked.png" alt="">
+                    </div>
+                    <h3 class="feature-title">ATS Optimisation</h3>
+                    <p class="feature-description">Ensure your resume passes Applicant Tracking Systems with our ATS compatibility analysis.</p>
+                    <ul class="feature-list">
+                        <li><img src="https://img.icons8.com/fluency/16/checkmark--v1.png" alt=""> Keyword analysis</li>
+                        <li><img src="https://img.icons8.com/fluency/16/checkmark--v1.png" alt=""> Section completeness</li>
+                        <li><img src="https://img.icons8.com/fluency/16/checkmark--v1.png" alt=""> Contact info check</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="col-lg-4 col-md-6">
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <img src="https://img.icons8.com/fluency/64/overtime.png" alt="">
+                    </div>
+                    <h3 class="feature-title">Analysis History</h3>
+                    <p class="feature-description">Track your resume evolution over time, compare scores, and access all reports.</p>
+                    <ul class="feature-list">
+                        <li><img src="https://img.icons8.com/fluency/16/checkmark--v1.png" alt=""> Version tracking</li>
+                        <li><img src="https://img.icons8.com/fluency/16/checkmark--v1.png" alt=""> Score comparison</li>
+                        <li><img src="https://img.icons8.com/fluency/16/checkmark--v1.png" alt=""> Full report access</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+{% if active_jobs %}
+<section class="py-5 bg-light">
+    <div class="container">
+        <div class="section-header text-center mb-4">
+            <span class="section-badge"><img src="https://img.icons8.com/fluency/20/briefcase.png" alt=""> Live Openings</span>
+            <h2 class="section-title">Latest <span class="gradient-text">Job Postings</span></h2>
+        </div>
+        <div class="row g-3">
+            {% for job in active_jobs %}
+            <div class="col-lg-4 col-md-6">
+                <div class="job-card p-3 rounded-3 border h-100 bg-white">
+                    <div class="d-flex align-items-start gap-3">
+                        <img src="https://img.icons8.com/fluency/40/office-building.png" alt="">
+                        <div>
+                            <h6 class="fw-bold mb-1">{{ job.title }}</h6>
+                            <small class="text-muted d-block">{{ job.company }}</small>
+                            {% if job.location %}<small class="text-muted"><i class="bi bi-geo-alt"></i> {{ job.location }}</small>{% endif %}
+                        </div>
+                    </div>
+                    <div class="mt-2 d-flex flex-wrap gap-1">
+                        <span class="badge bg-primary-subtle text-primary">{{ job.job_type }}</span>
+                        {% if job.experience_min > 0 %}<span class="badge bg-secondary-subtle text-secondary">{{ job.experience_min }}+ yrs</span>{% endif %}
+                    </div>
+                    <div class="mt-2 d-flex flex-wrap gap-1">
+                        {% for skill in job.required_skills[:4] %}
+                        <span class="badge bg-light text-dark border">{{ skill }}</span>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        <div class="text-center mt-4">
+            <a href="{{ url_for('auth.register') }}" class="btn btn-primary">
+                <img src="https://img.icons8.com/fluency/20/resume.png" alt=""> Upload Resume to Get Matched
+            </a>
+        </div>
+    </div>
+</section>
+{% endif %}
+
+<section class="cta-section py-5">
+    <div class="container">
+        <div class="cta-card text-center p-5 rounded-4">
+            <img src="https://img.icons8.com/fluency/80/rocket.png" alt="Rocket" class="mb-3">
+            <h2 class="fw-bold mb-3">Ready to Supercharge Your Career?</h2>
+            <p class="text-muted mb-4">Join thousands of candidates getting hired faster with AI-powered resume analysis.</p>
+            {% if not current_user.is_authenticated %}
+            <div class="d-flex gap-3 justify-content-center flex-wrap">
+                <a href="{{ url_for('auth.register') }}" class="btn btn-primary btn-lg">
+                    <img src="https://img.icons8.com/fluency/24/add-user-male.png" alt=""> Create Free Account
+                </a>
+                <a href="{{ url_for('auth.recruiter_login') }}" class="btn btn-outline-warning btn-lg">
+                    <img src="https://img.icons8.com/fluency/24/human-resources.png" alt=""> Recruiter Login
+                </a>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</section>
+{% endblock %}

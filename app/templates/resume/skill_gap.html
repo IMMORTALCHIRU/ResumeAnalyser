@@ -1,0 +1,149 @@
+{% extends 'base.html' %}
+{% block title %}Skill Gap Analysis – Smart Resume Analyser{% endblock %}
+{% block content %}
+<div class="container py-5 mt-4">
+    <div class="d-flex align-items-center gap-3 mb-4">
+        <a href="{{ url_for('user_dashboard.dashboard') }}" class="btn btn-outline-secondary btn-sm"><i class="bi bi-arrow-left"></i> Dashboard</a>
+        <h2 class="fw-bold mb-0"><img src="https://img.icons8.com/fluency/32/graph.png" alt=""> Skill Gap Analysis</h2>
+    </div>
+
+    {% if resume %}
+    <div class="row g-4 mb-4">
+        <div class="col-md-6">
+            <div class="card border-0 shadow-sm p-4 h-100">
+                <div class="d-flex align-items-center gap-3 mb-3">
+                    <img src="https://img.icons8.com/fluency/40/skills.png" alt="">
+                    <div>
+                        <h5 class="fw-bold mb-0">Your Current Skills</h5>
+                        <small class="text-muted">{{ resume.skills|length }} skills detected</small>
+                    </div>
+                </div>
+                <div class="d-flex flex-wrap gap-2">
+                    {% for skill in resume.skills %}
+                    <span class="badge bg-success-subtle text-success rounded-pill px-3 py-2">
+                        <img src="https://img.icons8.com/fluency/14/checkmark--v1.png" alt=""> {{ skill }}
+                    </span>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6">
+            <div class="card border-0 shadow-sm p-4 h-100">
+                <div class="d-flex align-items-center gap-3 mb-3">
+                    <img src="https://img.icons8.com/fluency/40/warning-shield.png" alt="">
+                    <div>
+                        <h5 class="fw-bold mb-0">Skills Gap for {{ resume.predicted_field }}</h5>
+                        <small class="text-muted">{{ resume.skill_gap|length }} skills to acquire</small>
+                    </div>
+                </div>
+                {% if resume.skill_gap %}
+                <div class="d-flex flex-wrap gap-2">
+                    {% for skill in resume.skill_gap %}
+                    <span class="badge bg-danger-subtle text-danger rounded-pill px-3 py-2">
+                        <img src="https://img.icons8.com/fluency/14/add.png" alt=""> {{ skill }}
+                    </span>
+                    {% endfor %}
+                </div>
+                {% else %}
+                <div class="text-center py-3">
+                    <img src="https://img.icons8.com/fluency/48/checkmark--v1.png" alt="">
+                    <p class="text-success fw-semibold mt-2 mb-0">Great! No skill gaps detected.</p>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <!-- Progress Bars -->
+    {% if resume.skill_gap %}
+    <div class="card border-0 shadow-sm mb-4">
+        <div class="card-header bg-white py-3">
+            <h6 class="mb-0 fw-semibold"><img src="https://img.icons8.com/fluency/20/increase.png" alt=""> Skill Acquisition Roadmap</h6>
+        </div>
+        <div class="card-body">
+            {% set total = resume.skills|length + resume.skill_gap|length %}
+            <div class="mb-3">
+                <div class="d-flex justify-content-between mb-1">
+                    <small class="fw-semibold">Skills Mastered</small>
+                    <small>{{ resume.skills|length }}/{{ total }}</small>
+                </div>
+                <div class="progress" style="height:12px;">
+                    <div class="progress-bar bg-success rounded-pill" style="width: {{ (resume.skills|length / total * 100)|int if total > 0 else 0 }}%"></div>
+                </div>
+            </div>
+            <div class="mb-0">
+                <div class="d-flex justify-content-between mb-1">
+                    <small class="fw-semibold">Skills to Learn</small>
+                    <small>{{ resume.skill_gap|length }}/{{ total }}</small>
+                </div>
+                <div class="progress" style="height:12px;">
+                    <div class="progress-bar bg-warning rounded-pill" style="width: {{ (resume.skill_gap|length / total * 100)|int if total > 0 else 0 }}%"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- Recommendations -->
+    {% if recommendations and recommendations.recommended_roles %}
+    <div class="card border-0 shadow-sm mb-4">
+        <div class="card-header bg-white py-3">
+            <h6 class="mb-0 fw-semibold"><img src="https://img.icons8.com/fluency/20/job.png" alt=""> AI Role Recommendations</h6>
+        </div>
+        <div class="card-body">
+            <div class="row g-3">
+                {% for role in recommendations.recommended_roles %}
+                <div class="col-lg-4 col-md-6">
+                    <div class="border rounded-3 p-3">
+                        <div class="d-flex justify-content-between align-items-start mb-2">
+                            <h6 class="fw-semibold mb-0">{{ role.title }}</h6>
+                            <span class="badge bg-primary-subtle text-primary">{{ (role.match_score * 100)|int }}%</span>
+                        </div>
+                        <div class="progress mb-2" style="height:5px;">
+                            <div class="progress-bar bg-primary" style="width:{{ (role.match_score * 100)|int }}%"></div>
+                        </div>
+                        <small class="text-muted">Matched: {{ role.matched_skills|join(', ') if role.matched_skills else 'N/A' }}</small>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+    {% endif %}
+
+    {% if recommendations and recommendations.recommended_courses %}
+    <div class="card border-0 shadow-sm">
+        <div class="card-header bg-white py-3">
+            <h6 class="mb-0 fw-semibold"><img src="https://img.icons8.com/fluency/20/learning.png" alt=""> Recommended Courses to Fill the Gap</h6>
+        </div>
+        <div class="card-body">
+            <div class="row g-3">
+                {% for course in recommendations.recommended_courses %}
+                <div class="col-lg-4 col-md-6">
+                    <div class="border rounded-3 p-3 h-100 d-flex flex-column">
+                        <div class="mb-2"><img src="https://img.icons8.com/fluency/32/graduation-cap.png" alt=""></div>
+                        <h6 class="fw-semibold mb-1">{{ course.name }}</h6>
+                        <span class="badge bg-secondary-subtle text-secondary mb-1">{{ course.platform }}</span>
+                        <small class="text-muted mb-3">{{ course.description }}</small>
+                        <a href="{{ course.url }}" target="_blank" rel="noopener noreferrer" class="btn btn-outline-primary btn-sm mt-auto">
+                            <i class="bi bi-box-arrow-up-right"></i> Start Learning
+                        </a>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+    {% endif %}
+
+    {% else %}
+    <div class="text-center py-5">
+        <img src="https://img.icons8.com/fluency/80/graph.png" alt="" class="mb-3">
+        <h4 class="fw-bold">No Resume Analysed Yet</h4>
+        <p class="text-muted mb-4">Upload your resume to see your skill gaps and improvement plan.</p>
+        <a href="{{ url_for('resume.upload') }}" class="btn btn-primary"><img src="https://img.icons8.com/fluency/20/upload-to-cloud.png" alt=""> Upload Resume</a>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

@@ -1,0 +1,283 @@
+{% extends 'base.html' %}
+
+{% block title %}Dashboard - Interview Prep Tracker{% endblock %}
+
+{% block content %}
+<section class="dashboard-section">
+    <div class="container-fluid">
+        <div class="row">
+            <!-- Sidebar -->
+            <div class="col-lg-2 sidebar-col">
+                {% include 'components/sidebar.html' %}
+            </div>
+            
+            <!-- Main Content -->
+            <div class="col-lg-10 main-content-col">
+                <div class="dashboard-content">
+                    <!-- Welcome Header -->
+                    <div class="dashboard-header">
+                        <div class="welcome-text">
+                            <h1>Welcome back, <span class="gradient-text">{{ current_user.name.split()[0] }}</span>! 👋</h1>
+                            <p>Here's an overview of your interview preparation progress</p>
+                        </div>
+                        <div class="header-actions">
+                            <a href="{{ url_for('interview.schedule') }}" class="btn btn-primary">
+                                <i class="bi bi-play-circle"></i> Start Interview
+                            </a>
+                        </div>
+                    </div>
+                    
+                    <!-- Stats Cards -->
+                    <div class="row g-4 mb-4">
+                        <div class="col-xl-3 col-md-6">
+                            <div class="stat-card stat-primary">
+                                <div class="stat-icon">
+                                    <i class="bi bi-journal-check"></i>
+                                </div>
+                                <div class="stat-info">
+                                    <h3>{{ analytics.total_interviews }}</h3>
+                                    <p>Total Interviews</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-xl-3 col-md-6">
+                            <div class="stat-card stat-success">
+                                <div class="stat-icon">
+                                    <i class="bi bi-graph-up-arrow"></i>
+                                </div>
+                                <div class="stat-info">
+                                    <h3>{{ analytics.average_score }}%</h3>
+                                    <p>Average Score</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-xl-3 col-md-6">
+                            <div class="stat-card stat-warning">
+                                <div class="stat-icon">
+                                    <i class="bi bi-trophy"></i>
+                                </div>
+                                <div class="stat-info">
+                                    <h3>{{ analytics.best_score }}%</h3>
+                                    <p>Best Score</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-xl-3 col-md-6">
+                            <div class="stat-card stat-info">
+                                <div class="stat-icon">
+                                    <i class="bi bi-arrow-up-circle"></i>
+                                </div>
+                                <div class="stat-info">
+                                    <h3>{{ analytics.improvement_rate }}%</h3>
+                                    <p>Improvement</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="row g-4">
+                        <!-- Resume Summary -->
+                        <div class="col-xl-4">
+                            <div class="dashboard-card h-100">
+                                <div class="card-header">
+                                    <h3><i class="bi bi-file-earmark-person"></i> Resume Summary</h3>
+                                    <a href="{{ url_for('resume.upload') }}" class="btn btn-sm btn-outline-primary">
+                                        {% if resume %}Update{% else %}Upload{% endif %}
+                                    </a>
+                                </div>
+                                <div class="card-body">
+                                    {% if resume %}
+                                    <div class="resume-summary">
+                                        <div class="resume-score-circle">
+                                            <svg viewBox="0 0 36 36" class="circular-chart">
+                                                <path class="circle-bg" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"/>
+                                                <path class="circle" stroke-dasharray="{{ resume.resume_score }}, 100" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"/>
+                                                <text x="18" y="20.35" class="percentage">{{ resume.resume_score }}%</text>
+                                            </svg>
+                                            <p class="score-label">Resume Score</p>
+                                        </div>
+                                        <div class="resume-details">
+                                            <div class="detail-item">
+                                                <span class="label">Level</span>
+                                                <span class="value badge bg-{{ 'success' if resume.candidate_level == 'Experienced' else 'warning' if resume.candidate_level == 'Intermediate' else 'info' }}">{{ resume.candidate_level }}</span>
+                                            </div>
+                                            <div class="detail-item">
+                                                <span class="label">Field</span>
+                                                <span class="value">{{ resume.predicted_field }}</span>
+                                            </div>
+                                            <div class="detail-item">
+                                                <span class="label">Skills</span>
+                                                <span class="value">{{ resume.skills|length }} detected</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    {% else %}
+                                    <div class="empty-state">
+                                        <img src="https://img.icons8.com/fluency/96/upload-document.png" alt="Upload">
+                                        <p>Upload your resume to get started</p>
+                                        <a href="{{ url_for('resume.upload') }}" class="btn btn-primary btn-sm">Upload Now</a>
+                                    </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Job Recommendations -->
+                        <div class="col-xl-4">
+                            <div class="dashboard-card h-100">
+                                <div class="card-header">
+                                    <h3><i class="bi bi-briefcase"></i> Recommended Roles</h3>
+                                </div>
+                                <div class="card-body">
+                                    {% if recommendations and recommendations.recommended_roles %}
+                                    <div class="role-list">
+                                        {% for role in recommendations.recommended_roles[:4] %}
+                                        <div class="role-item">
+                                            <div class="role-info">
+                                                <h4>{{ role.role }}</h4>
+                                                <div class="progress">
+                                                    <div class="progress-bar" style="width: {{ role.match_score }}%"></div>
+                                                </div>
+                                            </div>
+                                            <span class="match-score">{{ role.match_score }}%</span>
+                                        </div>
+                                        {% endfor %}
+                                    </div>
+                                    {% else %}
+                                    <div class="empty-state">
+                                        <img src="https://img.icons8.com/fluency/96/briefcase.png" alt="Jobs">
+                                        <p>Complete your resume analysis to get job recommendations</p>
+                                    </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Quick Actions -->
+                        <div class="col-xl-4">
+                            <div class="dashboard-card h-100">
+                                <div class="card-header">
+                                    <h3><i class="bi bi-lightning"></i> Quick Actions</h3>
+                                </div>
+                                <div class="card-body">
+                                    <div class="quick-actions">
+                                        <a href="{{ url_for('interview.schedule') }}" class="action-item">
+                                            <div class="action-icon bg-primary">
+                                                <i class="bi bi-play-circle"></i>
+                                            </div>
+                                            <div class="action-text">
+                                                <h4>Start Mock Interview</h4>
+                                                <p>Practice with tailored questions</p>
+                                            </div>
+                                        </a>
+                                        <a href="{{ url_for('resume.upload') }}" class="action-item">
+                                            <div class="action-icon bg-success">
+                                                <i class="bi bi-upload"></i>
+                                            </div>
+                                            <div class="action-text">
+                                                <h4>Update Resume</h4>
+                                                <p>Get fresh analysis</p>
+                                            </div>
+                                        </a>
+                                        <a href="{{ url_for('dashboard.analytics') }}" class="action-item">
+                                            <div class="action-icon bg-warning">
+                                                <i class="bi bi-bar-chart"></i>
+                                            </div>
+                                            <div class="action-text">
+                                                <h4>View Analytics</h4>
+                                                <p>Track your progress</p>
+                                            </div>
+                                        </a>
+                                        <a href="{{ url_for('interview.history') }}" class="action-item">
+                                            <div class="action-icon bg-info">
+                                                <i class="bi bi-clock-history"></i>
+                                            </div>
+                                            <div class="action-text">
+                                                <h4>Interview History</h4>
+                                                <p>Review past performance</p>
+                                            </div>
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="row g-4 mt-2">
+                        <!-- Recent Interviews -->
+                        <div class="col-xl-8">
+                            <div class="dashboard-card">
+                                <div class="card-header">
+                                    <h3><i class="bi bi-clock-history"></i> Recent Interviews</h3>
+                                    <a href="{{ url_for('interview.history') }}" class="btn btn-sm btn-outline-primary">View All</a>
+                                </div>
+                                <div class="card-body">
+                                    {% if recent_interviews %}
+                                    <div class="interview-list">
+                                        {% for interview in recent_interviews %}
+                                        <div class="interview-item">
+                                            <div class="interview-icon">
+                                                <i class="bi bi-journal-text"></i>
+                                            </div>
+                                            <div class="interview-info">
+                                                <h4>{{ interview.interview_type }}</h4>
+                                                <p>{{ interview.completed_at.strftime('%B %d, %Y at %I:%M %p') if interview.completed_at else 'N/A' }}</p>
+                                            </div>
+                                            <div class="interview-score">
+                                                <span class="score {{ 'excellent' if interview.score >= 80 else 'good' if interview.score >= 60 else 'average' if interview.score >= 40 else 'poor' }}">
+                                                    {{ interview.score }}%
+                                                </span>
+                                            </div>
+                                            <a href="{{ url_for('interview.results', interview_id=interview.id) }}" class="btn btn-sm btn-outline-primary">
+                                                View
+                                            </a>
+                                        </div>
+                                        {% endfor %}
+                                    </div>
+                                    {% else %}
+                                    <div class="empty-state">
+                                        <img src="https://img.icons8.com/fluency/96/todo-list.png" alt="No interviews">
+                                        <p>No interviews yet. Start your first mock interview!</p>
+                                        <a href="{{ url_for('interview.schedule') }}" class="btn btn-primary btn-sm">Start Now</a>
+                                    </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Skills to Improve -->
+                        <div class="col-xl-4">
+                            <div class="dashboard-card h-100">
+                                <div class="card-header">
+                                    <h3><i class="bi bi-lightbulb"></i> Focus Areas</h3>
+                                </div>
+                                <div class="card-body">
+                                    {% if analytics.weak_areas %}
+                                    <div class="weak-areas-list">
+                                        {% for area in analytics.weak_areas[:5] %}
+                                        <div class="weak-area-item">
+                                            <i class="bi bi-exclamation-triangle text-warning"></i>
+                                            <span>{{ area }}</span>
+                                        </div>
+                                        {% endfor %}
+                                    </div>
+                                    <p class="focus-tip mt-3">
+                                        <i class="bi bi-info-circle"></i>
+                                        Practice more in these areas to improve your overall score
+                                    </p>
+                                    {% else %}
+                                    <div class="empty-state">
+                                        <img src="https://img.icons8.com/fluency/96/star.png" alt="Great">
+                                        <p>Complete more interviews to identify focus areas</p>
+                                    </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

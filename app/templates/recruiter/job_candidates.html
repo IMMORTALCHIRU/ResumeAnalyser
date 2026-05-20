@@ -1,0 +1,102 @@
+{% extends 'base.html' %}
+{% block title %}Candidates for {{ job.title }} – Smart Resume Analyser{% endblock %}
+{% block content %}
+<div class="container py-5 mt-4">
+    <div class="d-flex align-items-center gap-3 mb-4">
+        <a href="{{ url_for('recruiter.jobs') }}" class="btn btn-outline-secondary btn-sm"><i class="bi bi-arrow-left"></i> Jobs</a>
+        <div>
+            <h2 class="fw-bold mb-0"><img src="https://img.icons8.com/fluency/32/conference-call.png" alt=""> Candidates</h2>
+            <small class="text-muted">AI-ranked for: <strong>{{ job.title }}</strong> at {{ job.company }}</small>
+        </div>
+    </div>
+
+    <!-- Job Summary -->
+    <div class="card border-0 shadow-sm mb-4 p-3">
+        <div class="row align-items-center g-3">
+            <div class="col-md-8">
+                <div class="d-flex flex-wrap gap-2">
+                    <span class="badge bg-primary-subtle text-primary">{{ job.job_type }}</span>
+                    {% if job.location %}<span class="badge bg-secondary-subtle text-secondary"><i class="bi bi-geo-alt"></i> {{ job.location }}</span>{% endif %}
+                    {% if job.experience_min > 0 %}<span class="badge bg-info-subtle text-info">{{ job.experience_min }}+ yrs exp</span>{% endif %}
+                </div>
+                <div class="mt-2 d-flex flex-wrap gap-1">
+                    {% for skill in job.required_skills[:8] %}<span class="badge bg-light text-dark border">{{ skill }}</span>{% endfor %}
+                </div>
+            </div>
+            <div class="col-md-4 text-end">
+                <span class="badge {% if job.is_active %}bg-success{% else %}bg-secondary{% endif %} px-3 py-2">{{ 'Active' if job.is_active else 'Closed' }}</span>
+            </div>
+        </div>
+    </div>
+
+    {% if candidates %}
+    <div class="row g-4">
+        {% for item in candidates %}
+        <div class="col-lg-6">
+            <div class="card border-0 shadow-sm h-100 {% if item.resume.id in job.shortlisted %}border-success border-2{% endif %}">
+                <div class="card-body p-4">
+                    <div class="d-flex align-items-start gap-3 mb-3">
+                        <div class="user-avatar" style="background-color: {{ item.resume.avatar_color or '#6366f1' }}; width:48px; height:48px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-weight:700; font-size:1rem; color:#fff; flex-shrink:0;">
+                            {{ (item.resume.user_name or 'U')[0].upper() }}
+                        </div>
+                        <div class="flex-grow-1">
+                            <h6 class="fw-bold mb-1">{{ item.resume.user_name or 'Unknown Candidate' }}</h6>
+                            <small class="text-muted">{{ item.resume.predicted_field }} · {{ item.resume.candidate_level }}</small>
+                        </div>
+                        <div class="text-center">
+                            <div class="fw-bold fs-3 {% if item.match.match_score >= 70 %}text-success{% elif item.match.match_score >= 40 %}text-warning{% else %}text-danger{% endif %}">{{ item.match.match_score }}%</div>
+                            <small class="text-muted">Match</small>
+                        </div>
+                    </div>
+
+                    <div class="progress mb-3" style="height:8px;">
+                        <div class="progress-bar {% if item.match.match_score >= 70 %}bg-success{% elif item.match.match_score >= 40 %}bg-warning{% else %}bg-secondary{% endif %} rounded-pill" style="width:{{ item.match.match_score }}%"></div>
+                    </div>
+
+                    <div class="row g-2 mb-3">
+                        {% if item.match.matched_skills %}
+                        <div class="col-6">
+                            <small class="text-success fw-semibold d-block mb-1">✓ Matched ({{ item.match.matched_skills|length }})</small>
+                            <div class="d-flex flex-wrap gap-1">
+                                {% for skill in item.match.matched_skills[:4] %}<span class="badge bg-success-subtle text-success" style="font-size:0.62rem;">{{ skill }}</span>{% endfor %}
+                            </div>
+                        </div>
+                        {% endif %}
+                        {% if item.match.missing_skills %}
+                        <div class="col-6">
+                            <small class="text-danger fw-semibold d-block mb-1">✗ Missing ({{ item.match.missing_skills|length }})</small>
+                            <div class="d-flex flex-wrap gap-1">
+                                {% for skill in item.match.missing_skills[:4] %}<span class="badge bg-danger-subtle text-danger" style="font-size:0.62rem;">{{ skill }}</span>{% endfor %}
+                            </div>
+                        </div>
+                        {% endif %}
+                    </div>
+
+                    <p class="small text-muted mb-3">
+                        <img src="https://img.icons8.com/fluency/14/artificial-intelligence.png" alt=""> {{ item.match.recommendation }}
+                    </p>
+
+                    <div class="d-flex gap-2">
+                        <a href="{{ url_for('recruiter.applicant_detail', resume_id=item.resume.id) }}" class="btn btn-outline-primary btn-sm flex-grow-1">View Profile</a>
+                        <form method="POST" action="{{ url_for('recruiter.toggle_shortlist', job_id=job.id, resume_id=item.resume.id) }}">
+                            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                            <button type="submit" class="btn btn-sm {% if item.resume.id in job.shortlisted %}btn-success{% else %}btn-outline-success{% endif %}">
+                                <i class="bi bi-bookmark{% if item.resume.id in job.shortlisted %}-fill{% endif %}"></i>
+                                {{ 'Shortlisted' if item.resume.id in job.shortlisted else 'Shortlist' }}
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+    <div class="text-center py-5">
+        <img src="https://img.icons8.com/fluency/80/conference-call.png" alt="" class="mb-3">
+        <h4 class="fw-bold">No Matching Candidates</h4>
+        <p class="text-muted">No candidates have uploaded resumes yet that match this job's skills.</p>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

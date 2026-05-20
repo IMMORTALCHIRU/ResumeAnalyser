@@ -1,0 +1,106 @@
+{% extends 'base.html' %}
+{% block title %}Shortlisted Candidates – Smart Resume Analyser{% endblock %}
+{% block content %}
+<div class="container py-5 mt-4">
+    <div class="d-flex align-items-center gap-3 mb-4">
+        <a href="{{ url_for('recruiter.dashboard') }}" class="btn btn-outline-secondary btn-sm"><i class="bi bi-arrow-left"></i> Dashboard</a>
+        <h2 class="fw-bold mb-0"><img src="https://img.icons8.com/fluency/32/bookmark.png" alt=""> Shortlisted Candidates</h2>
+        <span class="badge bg-primary ms-2">{{ total_shortlisted }}</span>
+    </div>
+
+    <!-- Stats -->
+    <div class="row g-3 mb-4">
+        <div class="col-md-4">
+            <div class="card border-0 shadow-sm p-3 rounded-3 text-center">
+                <div class="stat-number fw-bold fs-3 text-primary">{{ total_shortlisted }}</div>
+                <div class="text-muted small">Total Shortlisted</div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card border-0 shadow-sm p-3 rounded-3 text-center">
+                <div class="stat-number fw-bold fs-3 text-success">{{ total_jobs }}</div>
+                <div class="text-muted small">Active Jobs</div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card border-0 shadow-sm p-3 rounded-3 text-center">
+                <div class="stat-number fw-bold fs-3 text-info">{{ (total_shortlisted / total_jobs * 100)|int if total_jobs > 0 else 0 }}%</div>
+                <div class="text-muted small">Avg per Job</div>
+            </div>
+        </div>
+    </div>
+
+    {% if shortlisted_candidates %}
+    <div class="row g-4">
+        {% for item in shortlisted_candidates %}
+        <div class="col-lg-6">
+            <div class="card border-0 shadow-sm h-100 border-success border-2">
+                <div class="card-body p-4">
+                    <div class="d-flex align-items-start gap-3 mb-3">
+                        <div class="user-avatar" style="background-color: {{ item.resume.avatar_color or '#6366f1' }}; width:56px; height:56px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-weight:700; font-size:1.25rem; color:#fff; flex-shrink:0;">
+                            {{ (item.resume.user_name or 'U')[0].upper() }}
+                        </div>
+                        <div class="flex-grow-1">
+                            <h6 class="fw-bold mb-1">{{ item.resume.user_name or 'Unknown Candidate' }}</h6>
+                            <small class="text-muted d-block">{{ item.resume.user_email }}</small>
+                            <small class="text-muted">{{ item.resume.experience_years }} yrs exp · {{ item.resume.predicted_field }}</small>
+                        </div>
+                        <div class="text-end">
+                            <div class="fw-bold fs-4 text-success">{{ item.resume.resume_score }}%</div>
+                            <small class="text-muted d-block">Score</small>
+                        </div>
+                    </div>
+
+                    <div class="d-flex gap-2 mb-3 flex-wrap">
+                        <span class="badge bg-primary-subtle text-primary">{{ item.resume.predicted_field }}</span>
+                        <span class="badge bg-secondary-subtle text-secondary">{{ item.resume.candidate_level }}</span>
+                        <span class="badge bg-success-subtle text-success"><i class="bi bi-bookmark-fill"></i> Shortlisted</span>
+                    </div>
+
+                    <div class="mb-3">
+                        <small class="fw-semibold text-muted d-block mb-2">Top Skills:</small>
+                        <div class="d-flex flex-wrap gap-1">
+                            {% for skill in item.resume.skills[:5] %}
+                            <span class="badge bg-light text-dark border" style="font-size:0.7rem;">{{ skill }}</span>
+                            {% endfor %}
+                            {% if item.resume.skills|length > 5 %}
+                            <span class="badge bg-light text-muted border" style="font-size:0.7rem;">+{{ item.resume.skills|length - 5 }}</span>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <div class="border-top pt-3">
+                        <small class="fw-semibold text-muted d-block mb-2">Shortlisted for ({{ item.jobs|length }}):</small>
+                        <div class="d-flex flex-wrap gap-2">
+                            {% for job_id in item.jobs %}
+                            <!-- Job info would be shown here if we fetch job details -->
+                            <span class="badge bg-warning text-dark" style="font-size:0.75rem;">Job #{{ loop.index }}</span>
+                            {% endfor %}
+                        </div>
+                    </div>
+
+                    <div class="d-flex gap-2 mt-3">
+                        <a href="{{ url_for('recruiter.applicant_detail', resume_id=item.resume.id) }}" class="btn btn-outline-primary btn-sm flex-grow-1">
+                            <i class="bi bi-eye"></i> View Profile
+                        </a>
+                        <!-- <a href="#" class="btn btn-outline-secondary btn-sm">
+                            <i class="bi bi-envelope"></i> Email
+                        </a> -->
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+    <div class="text-center py-5">
+        <img src="https://img.icons8.com/fluency/80/bookmark.png" alt="" class="mb-3" style="opacity: 0.5;">
+        <h4 class="fw-bold">No Shortlisted Candidates Yet</h4>
+        <p class="text-muted mb-3">Start shortlisting candidates from job applicants to see them here.</p>
+        <a href="{{ url_for('recruiter.applicants') }}" class="btn btn-primary">
+            <i class="bi bi-search"></i> Browse Applicants
+        </a>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

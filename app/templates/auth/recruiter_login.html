@@ -1,0 +1,52 @@
+{% extends 'base.html' %}
+{% block title %}Recruiter Login – Smart Resume Analyser{% endblock %}
+{% block content %}
+<section class="auth-section">
+    <div class="container">
+        <div class="row justify-content-center align-items-center min-vh-100">
+            <div class="col-lg-5 col-md-7">
+                <div class="auth-card recruiter-auth animate__animated animate__fadeInUp">
+                    <div class="auth-header text-center mb-4">
+                        <img src="https://img.icons8.com/fluency/64/human-resources.png" alt="HR" class="auth-logo mb-3">
+                        <h2 class="auth-title">Recruiter Portal</h2>
+                        <p class="auth-subtitle text-muted">Sign in with your HR credentials</p>
+                        <div class="alert alert-warning py-2 px-3 d-inline-flex align-items-center gap-2 mt-2" style="font-size:0.82rem;">
+                            <img src="https://img.icons8.com/fluency/16/info.png" alt="">
+                            <span>HR Login: <strong>hr@portal.in</strong> / <strong>Admin@123</strong></span>
+                        </div>
+                    </div>
+                    <form method="POST" class="auth-form">
+                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                        <div class="form-group mb-3">
+                            <label for="email" class="form-label">
+                                <img src="https://img.icons8.com/fluency/18/email.png" alt=""> Email Address
+                            </label>
+                            <input type="email" class="form-control" id="email" name="email" placeholder="Enter recruiter email" required>
+                        </div>
+                        <div class="form-group mb-4">
+                            <label for="password" class="form-label">
+                                <img src="https://img.icons8.com/fluency/18/lock.png" alt=""> Password
+                            </label>
+                            <div class="password-input-wrapper position-relative">
+                                <input type="password" class="form-control" id="password" name="password" placeholder="Enter password" required>
+                                <button type="button" class="password-toggle btn btn-sm position-absolute top-50 end-0 translate-middle-y me-2 border-0 bg-transparent" onclick="togglePassword('password')">
+                                    <i class="bi bi-eye"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <button type="submit" class="btn btn-warning w-100 btn-lg fw-semibold text-dark">
+                            <img src="https://img.icons8.com/fluency/20/human-resources.png" alt=""> Sign In as Recruiter
+                        </button>
+                    </form>
+                    <div class="auth-divider my-3 text-center text-muted"><small>or</small></div>
+                    <div class="text-center">
+                        <a href="{{ url_for('auth.login') }}" class="text-muted small">
+                            <i class="bi bi-arrow-left"></i> Back to Candidate Login
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

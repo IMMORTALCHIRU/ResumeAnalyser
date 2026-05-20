@@ -1,0 +1,277 @@
+{% extends 'base.html' %}
+
+{% block title %}Analytics - Interview Prep Tracker{% endblock %}
+
+{% block content %}
+<section class="dashboard-section">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-lg-2 sidebar-col">
+                {% include 'components/sidebar.html' %}
+            </div>
+            
+            <div class="col-lg-10 main-content-col">
+                <div class="dashboard-content">
+                    <div class="page-header">
+                        <h1><i class="bi bi-graph-up-arrow"></i> Performance Analytics</h1>
+                        <p>Track your progress and identify areas for improvement</p>
+                    </div>
+                    
+                    <!-- Stats Overview -->
+                    <div class="row g-4 mb-4">
+                        <div class="col-xl-3 col-md-6">
+                            <div class="analytics-stat-card">
+                                <div class="stat-icon bg-primary-soft">
+                                    <i class="bi bi-journal-check"></i>
+                                </div>
+                                <div class="stat-content">
+                                    <h3>{{ analytics.total_interviews }}</h3>
+                                    <p>Total Interviews</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-xl-3 col-md-6">
+                            <div class="analytics-stat-card">
+                                <div class="stat-icon bg-success-soft">
+                                    <i class="bi bi-percent"></i>
+                                </div>
+                                <div class="stat-content">
+                                    <h3>{{ analytics.average_score }}%</h3>
+                                    <p>Average Score</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-xl-3 col-md-6">
+                            <div class="analytics-stat-card">
+                                <div class="stat-icon bg-warning-soft">
+                                    <i class="bi bi-trophy"></i>
+                                </div>
+                                <div class="stat-content">
+                                    <h3>{{ analytics.best_score }}%</h3>
+                                    <p>Best Score</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-xl-3 col-md-6">
+                            <div class="analytics-stat-card">
+                                <div class="stat-icon bg-info-soft">
+                                    <i class="bi bi-graph-up"></i>
+                                </div>
+                                <div class="stat-content">
+                                    <h3>{{ analytics.improvement_rate }}%</h3>
+                                    <p>Improvement Rate</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="row g-4">
+                        <!-- Score Trend Chart -->
+                        <div class="col-xl-8">
+                            <div class="dashboard-card">
+                                <div class="card-header">
+                                    <h3><i class="bi bi-graph-up"></i> Score Trend</h3>
+                                </div>
+                                <div class="card-body">
+                                    <canvas id="scoreTrendChart"></canvas>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Skill Proficiency -->
+                        <div class="col-xl-4">
+                            <div class="dashboard-card h-100">
+                                <div class="card-header">
+                                    <h3><i class="bi bi-pie-chart"></i> Skill Proficiency</h3>
+                                </div>
+                                <div class="card-body">
+                                    <canvas id="skillRadarChart"></canvas>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Performance by Type -->
+                        <div class="col-xl-6">
+                            <div class="dashboard-card">
+                                <div class="card-header">
+                                    <h3><i class="bi bi-bar-chart"></i> Performance by Interview Type</h3>
+                                </div>
+                                <div class="card-body">
+                                    <canvas id="typeBarChart"></canvas>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Detailed Breakdown -->
+                        <div class="col-xl-6">
+                            <div class="dashboard-card h-100">
+                                <div class="card-header">
+                                    <h3><i class="bi bi-list-ul"></i> Interview Type Breakdown</h3>
+                                </div>
+                                <div class="card-body">
+                                    {% if analytics.interviews_by_type %}
+                                    <div class="breakdown-list">
+                                        {% for itype, data in analytics.interviews_by_type.items() %}
+                                        <div class="breakdown-item">
+                                            <div class="breakdown-info">
+                                                <h4>{{ itype }}</h4>
+                                                <p>{{ data.count }} interview{{ 's' if data.count > 1 else '' }}</p>
+                                            </div>
+                                            <div class="breakdown-stats">
+                                                <span class="avg-score">Avg: {{ data.average_score }}%</span>
+                                                <span class="best-score">Best: {{ data.best_score }}%</span>
+                                            </div>
+                                        </div>
+                                        {% endfor %}
+                                    </div>
+                                    {% else %}
+                                    <div class="empty-state">
+                                        <p>Complete more interviews to see breakdown</p>
+                                    </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Strong & Weak Areas -->
+                        <div class="col-xl-6">
+                            <div class="dashboard-card">
+                                <div class="card-header">
+                                    <h3><i class="bi bi-hand-thumbs-up"></i> Strong Areas</h3>
+                                </div>
+                                <div class="card-body">
+                                    {% if analytics.strong_areas %}
+                                    <div class="areas-list success">
+                                        {% for area in analytics.strong_areas %}
+                                        <div class="area-item">
+                                            <i class="bi bi-check-circle-fill"></i>
+                                            <span>{{ area }}</span>
+                                        </div>
+                                        {% endfor %}
+                                    </div>
+                                    {% else %}
+                                    <p class="text-muted">Complete more interviews to identify strong areas</p>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="col-xl-6">
+                            <div class="dashboard-card">
+                                <div class="card-header">
+                                    <h3><i class="bi bi-exclamation-triangle"></i> Areas to Improve</h3>
+                                </div>
+                                <div class="card-body">
+                                    {% if analytics.weak_areas %}
+                                    <div class="areas-list warning">
+                                        {% for area in analytics.weak_areas %}
+                                        <div class="area-item">
+                                            <i class="bi bi-arrow-up-circle"></i>
+                                            <span>{{ area }}</span>
+                                        </div>
+                                        {% endfor %}
+                                    </div>
+                                    {% else %}
+                                    <p class="text-muted">Complete more interviews to identify improvement areas</p>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    const chartData = {{ chart_data | tojson }};
+    
+    // Score Trend Line Chart
+    new Chart(document.getElementById('scoreTrendChart'), {
+        type: 'line',
+        data: {
+            labels: chartData.line_chart.labels,
+            datasets: [{
+                label: 'Score',
+                data: chartData.line_chart.data,
+                borderColor: '#667eea',
+                backgroundColor: 'rgba(102, 126, 234, 0.1)',
+                fill: true,
+                tension: 0.4
+            }]
+        },
+        options: {
+            responsive: true,
+            plugins: {
+                legend: { display: false }
+            },
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    max: 100
+                }
+            }
+        }
+    });
+    
+    // Skill Radar Chart
+    if (chartData.radar_chart.labels.length > 0) {
+        new Chart(document.getElementById('skillRadarChart'), {
+            type: 'radar',
+            data: {
+                labels: chartData.radar_chart.labels,
+                datasets: [{
+                    label: 'Proficiency',
+                    data: chartData.radar_chart.data,
+                    backgroundColor: 'rgba(102, 126, 234, 0.2)',
+                    borderColor: '#667eea',
+                    pointBackgroundColor: '#667eea'
+                }]
+            },
+            options: {
+                responsive: true,
+                scales: {
+                    r: {
+                        beginAtZero: true,
+                        max: 100
+                    }
+                }
+            }
+        });
+    }
+    
+    // Performance Bar Chart
+    new Chart(document.getElementById('typeBarChart'), {
+        type: 'bar',
+        data: {
+            labels: chartData.bar_chart.labels,
+            datasets: [{
+                label: 'Average Score',
+                data: chartData.bar_chart.data,
+                backgroundColor: [
+                    'rgba(102, 126, 234, 0.8)',
+                    'rgba(118, 75, 226, 0.8)',
+                    'rgba(95, 179, 255, 0.8)',
+                    'rgba(255, 159, 67, 0.8)',
+                    'rgba(40, 199, 111, 0.8)'
+                ]
+            }]
+        },
+        options: {
+            responsive: true,
+            plugins: {
+                legend: { display: false }
+            },
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    max: 100
+                }
+            }
+        }
+    });
+</script>
+{% endblock %}

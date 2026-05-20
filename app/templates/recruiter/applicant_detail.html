@@ -1,0 +1,129 @@
+{% extends 'base.html' %}
+{% block title %}Applicant Profile – Smart Resume Analyser{% endblock %}
+{% block content %}
+<div class="container py-5 mt-4">
+    <div class="d-flex align-items-center gap-3 mb-4">
+        <a href="{{ url_for('recruiter.applicants') }}" class="btn btn-outline-secondary btn-sm"><i class="bi bi-arrow-left"></i> Back</a>
+        <h2 class="fw-bold mb-0"><img src="https://img.icons8.com/fluency/32/user-male-circle.png" alt=""> Applicant Profile</h2>
+    </div>
+
+    <div class="row g-4">
+        <!-- Candidate Info -->
+        <div class="col-lg-4">
+            <div class="card border-0 shadow-sm p-4 mb-4">
+                <div class="text-center mb-3">
+                    <div class="user-avatar-xl mx-auto mb-3" style="background-color: {{ resume.avatar_color or '#6366f1' }}; width:72px; height:72px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-weight:700; font-size:1.6rem; color:#fff;">
+                        {{ (resume.user_name or 'U')[0].upper() }}
+                    </div>
+                    <h5 class="fw-bold mb-1">{{ resume.user_name or 'Unknown' }}</h5>
+                    <p class="text-muted small mb-1">{{ resume.user_email or '' }}</p>
+                    {% if resume.contact_info and resume.contact_info.phone %}<p class="text-muted small mb-0"><i class="bi bi-telephone"></i> {{ resume.contact_info.phone }}</p>{% endif %}
+                </div>
+                <div class="d-flex justify-content-center gap-2 flex-wrap">
+                    <span class="badge bg-primary">{{ resume.predicted_field }}</span>
+                    <span class="badge bg-secondary">{{ resume.candidate_level }}</span>
+                </div>
+            </div>
+
+            <div class="card border-0 shadow-sm p-4 mb-4">
+                <h6 class="fw-semibold mb-3">Scores</h6>
+                {% for label, val in [('Overall Score', resume.resume_score), ('ATS Score', resume.ats_score), ('Formatting', resume.formatting_score)] %}
+                <div class="mb-3">
+                    <div class="d-flex justify-content-between mb-1">
+                        <small class="fw-semibold">{{ label }}</small>
+                        <small class="fw-bold {% if val >= 70 %}text-success{% elif val >= 40 %}text-warning{% else %}text-danger{% endif %}">{{ val }}%</small>
+                    </div>
+                    <div class="progress" style="height:8px;">
+                        <div class="progress-bar {% if val >= 70 %}bg-success{% elif val >= 40 %}bg-warning{% else %}bg-danger{% endif %}" style="width:{{ val }}%"></div>
+                    </div>
+                </div>
+                {% endfor %}
+                <div class="text-muted small mt-2">
+                    Experience: <strong>{{ resume.experience_years }} years</strong> &nbsp;·&nbsp; Pages: <strong>{{ resume.page_count }}</strong>
+                </div>
+            </div>
+        </div>
+
+        <!-- Details -->
+        <div class="col-lg-8">
+            <!-- Skills -->
+            <div class="card border-0 shadow-sm mb-4">
+                <div class="card-header bg-white py-3">
+                    <h6 class="mb-0 fw-semibold"><img src="https://img.icons8.com/fluency/20/skills.png" alt=""> Skills ({{ resume.skills|length }})</h6>
+                </div>
+                <div class="card-body">
+                    <div class="d-flex flex-wrap gap-2">
+                        {% for skill in resume.skills %}
+                        <span class="badge bg-primary-subtle text-primary rounded-pill px-3 py-2">{{ skill }}</span>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+
+            <!-- Education & Certifications -->
+            <div class="row g-3 mb-4">
+                {% if resume.education %}
+                <div class="col-md-6">
+                    <div class="card border-0 shadow-sm h-100">
+                        <div class="card-header bg-white py-3"><h6 class="mb-0 fw-semibold"><img src="https://img.icons8.com/fluency/20/graduation-cap.png" alt=""> Education</h6></div>
+                        <div class="card-body">{% for edu in resume.education[:4] %}<p class="small text-muted mb-2">{{ edu[:150] }}{% if edu|length > 150 %}...{% endif %}</p>{% endfor %}</div>
+                    </div>
+                </div>
+                {% endif %}
+                {% if resume.certifications %}
+                <div class="col-md-6">
+                    <div class="card border-0 shadow-sm h-100">
+                        <div class="card-header bg-white py-3"><h6 class="mb-0 fw-semibold"><img src="https://img.icons8.com/fluency/20/certificate.png" alt=""> Certifications</h6></div>
+                        <div class="card-body">{% for cert in resume.certifications[:4] %}<p class="small text-muted mb-2">{{ cert[:150] }}{% if cert|length > 150 %}...{% endif %}</p>{% endfor %}</div>
+                    </div>
+                </div>
+                {% endif %}
+            </div>
+
+            <!-- Job Matches for this candidate -->
+            {% if job_matches %}
+            <div class="card border-0 shadow-sm">
+                <div class="card-header bg-white py-3">
+                    <h6 class="mb-0 fw-semibold"><img src="https://img.icons8.com/fluency/20/job.png" alt=""> Job Match Scores</h6>
+                </div>
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table table-hover align-middle mb-0">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Job Title</th>
+                                    <th>Company</th>
+                                    <th>Match</th>
+                                    <th>Recommendation</th>
+                                    <th>Shortlist</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for item in job_matches %}
+                                <tr>
+                                    <td class="fw-semibold">{{ item.job.title }}</td>
+                                    <td class="text-muted">{{ item.job.company }}</td>
+                                    <td>
+                                        <span class="badge {% if item.match.match_score >= 70 %}bg-success{% elif item.match.match_score >= 40 %}bg-warning text-dark{% else %}bg-secondary{% endif %}">{{ item.match.match_score }}%</span>
+                                    </td>
+                                    <td><small>{{ item.match.recommendation }}</small></td>
+                                    <td>
+                                        <form method="POST" action="{{ url_for('recruiter.toggle_shortlist', job_id=item.job.id, resume_id=resume.id) }}">
+                                            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                                            <button type="submit" class="btn btn-sm {% if resume.id in item.job.shortlisted %}btn-success{% else %}btn-outline-success{% endif %}">
+                                                <i class="bi bi-bookmark{% if resume.id in item.job.shortlisted %}-fill{% endif %}"></i>
+                                            </button>
+                                        </form>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

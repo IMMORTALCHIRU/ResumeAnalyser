@@ -1,0 +1,94 @@
+{% extends 'base.html' %}
+{% block title %}All Applicants – Smart Resume Analyser{% endblock %}
+{% block content %}
+<div class="container py-5 mt-4">
+    <div class="d-flex align-items-center gap-3 mb-4">
+        <a href="{{ url_for('recruiter.dashboard') }}" class="btn btn-outline-secondary btn-sm"><i class="bi bi-arrow-left"></i> Dashboard</a>
+        <h2 class="fw-bold mb-0"><img src="https://img.icons8.com/fluency/32/conference-call.png" alt=""> All Applicants</h2>
+    </div>
+
+    <!-- Filters -->
+    <div class="card border-0 shadow-sm mb-4">
+        <div class="card-body">
+            <form method="GET" class="row g-3 align-items-end">
+                <div class="col-md-3">
+                    <label class="form-label small fw-semibold">Field</label>
+                    <select name="field" class="form-select form-select-sm">
+                        <option value="">All Fields</option>
+                        {% for f in ['Data Science', 'Web Development', 'Android Development', 'iOS Development', 'UI/UX', 'DevOps', 'Machine Learning', 'Cybersecurity'] %}
+                        <option value="{{ f }}" {% if request.args.get('field') == f %}selected{% endif %}>{{ f }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label small fw-semibold">Level</label>
+                    <select name="level" class="form-select form-select-sm">
+                        <option value="">All Levels</option>
+                        {% for l in ['Fresher', 'Junior', 'Mid-Level', 'Senior', 'Expert'] %}
+                        <option value="{{ l }}" {% if request.args.get('level') == l %}selected{% endif %}>{{ l }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label small fw-semibold">Min. Score</label>
+                    <input type="number" name="min_score" class="form-control form-control-sm" min="0" max="100" value="{{ request.args.get('min_score', '') }}" placeholder="e.g. 60">
+                </div>
+                <div class="col-md-3">
+                    <button type="submit" class="btn btn-primary btn-sm w-100">
+                        <i class="bi bi-funnel"></i> Filter
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    {% if resumes %}
+    <div class="row g-4">
+        {% for r in resumes %}
+        <div class="col-lg-6">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-body p-4">
+                    <div class="d-flex align-items-start gap-3 mb-3">
+                        <div class="user-avatar" style="background-color: {{ r.avatar_color or '#6366f1' }}; width:48px; height:48px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-weight:700; font-size:1rem; color:#fff; flex-shrink:0;">
+                            {{ (r.user_name or 'U')[0].upper() }}
+                        </div>
+                        <div class="flex-grow-1">
+                            <h6 class="fw-bold mb-1">{{ r.user_name or 'Unknown Candidate' }}</h6>
+                            <small class="text-muted">{{ r.user_email or '' }}</small>
+                        </div>
+                        <div class="text-center">
+                            <div class="fw-bold fs-4 {% if r.resume_score >= 70 %}text-success{% elif r.resume_score >= 40 %}text-warning{% else %}text-danger{% endif %}">{{ r.resume_score }}%</div>
+                            <small class="text-muted">Score</small>
+                        </div>
+                    </div>
+                    <div class="d-flex gap-2 mb-3 flex-wrap">
+                        <span class="badge bg-primary">{{ r.predicted_field }}</span>
+                        <span class="badge bg-secondary">{{ r.candidate_level }}</span>
+                        <span class="badge bg-info text-dark">{{ r.experience_years }} yrs</span>
+                        <span class="badge bg-warning text-dark">ATS: {{ r.ats_score }}%</span>
+                    </div>
+                    <div class="d-flex flex-wrap gap-1 mb-3">
+                        {% for skill in r.skills[:6] %}
+                        <span class="badge bg-light text-dark border" style="font-size:0.7rem;">{{ skill }}</span>
+                        {% endfor %}
+                        {% if r.skills|length > 6 %}
+                        <span class="badge bg-light text-muted border" style="font-size:0.7rem;">+{{ r.skills|length - 6 }}</span>
+                        {% endif %}
+                    </div>
+                    <a href="{{ url_for('recruiter.applicant_detail', resume_id=r.id) }}" class="btn btn-outline-primary btn-sm w-100">
+                        <img src="https://img.icons8.com/fluency/16/parse-from-clipboard.png" alt=""> View Full Profile
+                    </a>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+    <div class="text-center py-5">
+        <img src="https://img.icons8.com/fluency/80/conference-call.png" alt="" class="mb-3">
+        <h4 class="fw-bold">No Applicants Found</h4>
+        <p class="text-muted">Try adjusting your filters or wait for more candidates to register.</p>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

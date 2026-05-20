@@ -1,0 +1,66 @@
+<footer class="footer mt-5">
+    <div class="container">
+        <div class="row g-4">
+            <div class="col-lg-4 mb-4 mb-lg-0">
+                <div class="footer-brand d-flex align-items-center gap-2 mb-3">
+                    <img src="https://img.icons8.com/fluency/40/resume.png" alt="Logo">
+                    <span class="fw-bold fs-5">Smart Resume Analyser</span>
+                </div>
+                <p class="footer-description text-muted">
+                    AI-powered platform connecting talent with opportunity. Upload, analyse, and get matched with the right jobs.
+                </p>
+                <div class="social-links mt-3">
+                    <a href="#" class="social-link me-2"><i class="bi bi-github fs-5"></i></a>
+                    <a href="#" class="social-link me-2"><i class="bi bi-linkedin fs-5"></i></a>
+                    <a href="#" class="social-link"><i class="bi bi-twitter-x fs-5"></i></a>
+                </div>
+            </div>
+
+            <div class="col-lg-2 col-md-4">
+                <h6 class="footer-title fw-semibold mb-3">For Candidates</h6>
+                <ul class="footer-links list-unstyled">
+                    <li class="mb-2"><a href="{{ url_for('resume.upload') }}" class="text-muted text-decoration-none">Upload Resume</a></li>
+                    <li class="mb-2"><a href="{{ url_for('resume.job_recommendations') }}" class="text-muted text-decoration-none">Job Matches</a></li>
+                    <li class="mb-2"><a href="{{ url_for('resume.skill_gap') }}" class="text-muted text-decoration-none">Skill Gap</a></li>
+                    <li class="mb-2"><a href="{{ url_for('resume.history') }}" class="text-muted text-decoration-none">Resume History</a></li>
+                </ul>
+            </div>
+
+            <div class="col-lg-2 col-md-4">
+                <h6 class="footer-title fw-semibold mb-3">For Recruiters</h6>
+                <ul class="footer-links list-unstyled">
+                    <li class="mb-2"><a href="{{ url_for('auth.recruiter_login') }}" class="text-muted text-decoration-none">Recruiter Login</a></li>
+                    <li class="mb-2"><a href="{{ url_for('recruiter.dashboard') }}" class="text-muted text-decoration-none">Dashboard</a></li>
+                    <li class="mb-2"><a href="{{ url_for('recruiter.jobs') }}" class="text-muted text-decoration-none">Post Jobs</a></li>
+                    <li class="mb-2"><a href="{{ url_for('recruiter.applicants') }}" class="text-muted text-decoration-none">View Applicants</a></li>
+                </ul>
+            </div>
+
+            <div class="col-lg-4 col-md-4">
+                <h6 class="footer-title fw-semibold mb-3">Quick Access</h6>
+                <div class="d-grid gap-2">
+                    <a href="{{ url_for('auth.register') }}" class="btn btn-primary btn-sm">
+                        <img src="https://img.icons8.com/fluency/16/add-user-male.png" alt=""> Create Account
+                    </a>
+                    <a href="{{ url_for('auth.login') }}" class="btn btn-outline-secondary btn-sm">
+                        <img src="https://img.icons8.com/fluency/16/login-rounded-right.png" alt=""> Candidate Login
+                    </a>
+                    <a href="{{ url_for('auth.recruiter_login') }}" class="btn btn-outline-warning btn-sm">
+                        <img src="https://img.icons8.com/fluency/16/human-resources.png" alt=""> Recruiter Login
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <hr class="my-4">
+
+        <div class="d-flex flex-column flex-md-row justify-content-between align-items-center">
+            <p class="text-muted small mb-2 mb-md-0">&copy; 2025 Smart Resume Analyser. All rights reserved.</p>
+            <div class="d-flex gap-3">
+                <a href="#" class="text-muted small text-decoration-none">Privacy Policy</a>
+                <a href="#" class="text-muted small text-decoration-none">Terms</a>
+                <a href="#" class="text-muted small text-decoration-none">Contact</a>
+            </div>
+        </div>
+    </div>
+</footer>

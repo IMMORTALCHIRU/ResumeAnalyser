@@ -1,0 +1,83 @@
+{% extends 'base.html' %}
+{% block title %}Job Recommendations – Smart Resume Analyser{% endblock %}
+{% block content %}
+<div class="container py-5 mt-4">
+    <div class="d-flex align-items-center gap-3 mb-4">
+        <a href="{{ url_for('user_dashboard.dashboard') }}" class="btn btn-outline-secondary btn-sm"><i class="bi bi-arrow-left"></i> Dashboard</a>
+        <h2 class="fw-bold mb-0"><img src="https://img.icons8.com/fluency/32/job.png" alt=""> Job Recommendations</h2>
+    </div>
+
+    {% if job_matches %}
+    <div class="row g-4">
+        {% for item in job_matches %}
+        <div class="col-lg-6">
+            <div class="card border-0 shadow-sm h-100 job-card">
+                <div class="card-body p-4">
+                    <div class="d-flex align-items-start gap-3 mb-3">
+                        <img src="https://img.icons8.com/fluency/48/office-building.png" alt="">
+                        <div class="flex-grow-1">
+                            <h5 class="fw-bold mb-1">{{ item.job.title }}</h5>
+                            <p class="text-muted mb-1">{{ item.job.company }}</p>
+                            {% if item.job.location %}<small class="text-muted"><i class="bi bi-geo-alt"></i> {{ item.job.location }}</small>{% endif %}
+                        </div>
+                        <div class="text-center">
+                            <div class="fw-bold fs-4 {% if item.match.match_score >= 70 %}text-success{% elif item.match.match_score >= 40 %}text-warning{% else %}text-danger{% endif %}">{{ item.match.match_score }}%</div>
+                            <small class="text-muted">Match</small>
+                        </div>
+                    </div>
+
+                    <div class="progress mb-3" style="height: 8px;">
+                        <div class="progress-bar {% if item.match.match_score >= 70 %}bg-success{% elif item.match.match_score >= 40 %}bg-warning{% else %}bg-secondary{% endif %} rounded-pill" style="width: {{ item.match.match_score }}%"></div>
+                    </div>
+
+                    <div class="mb-2">
+                        <span class="badge bg-primary-subtle text-primary me-2">{{ item.job.job_type }}</span>
+                        {% if item.job.experience_min > 0 %}<span class="badge bg-secondary-subtle text-secondary">{{ item.job.experience_min }}+ yrs</span>{% endif %}
+                        {% if item.match.experience_ok %}<span class="badge bg-success-subtle text-success ms-1"><i class="bi bi-check2"></i> Exp. Match</span>{% endif %}
+                    </div>
+
+                    <div class="row g-2 mb-3">
+                        {% if item.match.matched_skills %}
+                        <div class="col-md-6">
+                            <small class="text-success fw-semibold d-block mb-1"><img src="https://img.icons8.com/fluency/14/checkmark--v1.png" alt=""> Matched ({{ item.match.matched_skills|length }})</small>
+                            <div class="d-flex flex-wrap gap-1">
+                                {% for skill in item.match.matched_skills[:5] %}
+                                <span class="badge bg-success-subtle text-success" style="font-size:0.65rem;">{{ skill }}</span>
+                                {% endfor %}
+                            </div>
+                        </div>
+                        {% endif %}
+                        {% if item.match.missing_skills %}
+                        <div class="col-md-6">
+                            <small class="text-danger fw-semibold d-block mb-1"><img src="https://img.icons8.com/fluency/14/cancel.png" alt=""> Missing ({{ item.match.missing_skills|length }})</small>
+                            <div class="d-flex flex-wrap gap-1">
+                                {% for skill in item.match.missing_skills[:5] %}
+                                <span class="badge bg-danger-subtle text-danger" style="font-size:0.65rem;">{{ skill }}</span>
+                                {% endfor %}
+                            </div>
+                        </div>
+                        {% endif %}
+                    </div>
+
+                    <div class="alert alert-light py-2 px-3 mb-0 small">
+                        <img src="https://img.icons8.com/fluency/16/artificial-intelligence.png" alt=""> {{ item.match.recommendation }}
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+    <div class="text-center py-5">
+        <img src="https://img.icons8.com/fluency/80/job.png" alt="" class="mb-3">
+        <h4 class="fw-bold">No Job Matches Yet</h4>
+        <p class="text-muted mb-4">
+            {% if not resume %}Upload your resume first to get AI-powered job matches.{% else %}Recruiters haven't posted any jobs yet. Check back soon!{% endif %}
+        </p>
+        {% if not resume %}
+        <a href="{{ url_for('resume.upload') }}" class="btn btn-primary"><img src="https://img.icons8.com/fluency/20/upload-to-cloud.png" alt=""> Upload Resume</a>
+        {% endif %}
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

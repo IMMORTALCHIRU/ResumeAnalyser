@@ -1,0 +1,13 @@
+dnspython
+email-validator
+Flask
+Flask-Login
+Flask-PyMongo
+Flask-WTF
+pdfminer.six
+pymongo
+PyPDF2
+python-docx
+python-dotenv
+spacy
+Werkzeug

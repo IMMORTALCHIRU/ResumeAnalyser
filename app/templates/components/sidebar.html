@@ -1,0 +1,54 @@
+<aside class="sidebar">
+    <div class="sidebar-header">
+        <img src="https://img.icons8.com/fluency/32/interview.png" alt="Logo">
+        <span>Interview Prep</span>
+    </div>
+    
+    <nav class="sidebar-nav">
+        <ul class="nav-list">
+            <li class="nav-item">
+                <a href="{{ url_for('dashboard.main') }}" class="nav-link {{ 'active' if request.endpoint == 'dashboard.main' else '' }}">
+                    <i class="bi bi-speedometer2"></i>
+                    <span>Dashboard</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="{{ url_for('resume.upload') }}" class="nav-link {{ 'active' if 'resume' in request.endpoint else '' }}">
+                    <i class="bi bi-file-earmark-person"></i>
+                    <span>Resume</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="{{ url_for('interview.schedule') }}" class="nav-link {{ 'active' if 'interview' in request.endpoint else '' }}">
+                    <i class="bi bi-calendar-check"></i>
+                    <span>Mock Interview</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="{{ url_for('dashboard.analytics') }}" class="nav-link {{ 'active' if request.endpoint == 'dashboard.analytics' else '' }}">
+                    <i class="bi bi-graph-up"></i>
+                    <span>Analytics</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="{{ url_for('interview.history') }}" class="nav-link">
+                    <i class="bi bi-clock-history"></i>
+                    <span>History</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="{{ url_for('dashboard.profile') }}" class="nav-link {{ 'active' if request.endpoint == 'dashboard.profile' else '' }}">
+                    <i class="bi bi-person-circle"></i>
+                    <span>Profile</span>
+                </a>
+            </li>
+        </ul>
+    </nav>
+    
+    <div class="sidebar-footer">
+        <a href="{{ url_for('auth.logout') }}" class="logout-btn">
+            <i class="bi bi-box-arrow-left"></i>
+            <span>Logout</span>
+        </a>
+    </div>
+</aside>

@@ -1,0 +1,70 @@
+{% extends 'base.html' %}
+{% block title %}Upload Resume – Smart Resume Analyser{% endblock %}
+{% block content %}
+<div class="container py-5 mt-4">
+    <div class="row justify-content-center">
+        <div class="col-lg-7">
+            <div class="card border-0 shadow-sm p-4 rounded-4">
+                <div class="text-center mb-4">
+                    <img src="https://img.icons8.com/fluency/64/upload-to-cloud.png" alt="" class="mb-3">
+                    <h2 class="fw-bold">Upload Your Resume</h2>
+                    <p class="text-muted">PDF or DOCX format. Get an AI-powered score, skill gap analysis, and job matches instantly.</p>
+                </div>
+                <form method="POST" enctype="multipart/form-data" id="uploadForm">
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                    <div class="upload-drop-zone border-2 border-dashed rounded-3 p-5 text-center mb-4" id="dropZone" ondragover="event.preventDefault(); this.classList.add('drag-over')" ondragleave="this.classList.remove('drag-over')" ondrop="handleDrop(event)">
+                        <img src="https://img.icons8.com/fluency/48/document.png" alt="" class="mb-3" id="fileIcon">
+                        <p class="mb-2 fw-semibold" id="dropText">Drag & drop your resume here</p>
+                        <p class="text-muted small mb-3">or</p>
+                        <label for="resume_file" class="btn btn-outline-primary">
+                            <img src="https://img.icons8.com/fluency/18/folder-invoices.png" alt=""> Browse File
+                        </label>
+                        <input type="file" class="d-none" id="resume_file" name="resume_file" accept=".pdf,.docx,.doc" onchange="handleFileSelect(event)">
+                        <p class="text-muted small mt-3" id="fileName">No file chosen (PDF / DOCX, max 10MB)</p>
+                    </div>
+                    <button type="submit" class="btn btn-primary btn-lg w-100" id="submitBtn" disabled>
+                        <img src="https://img.icons8.com/fluency/20/artificial-intelligence.png" alt=""> Analyse with AI
+                    </button>
+                </form>
+                <div class="mt-4 p-3 bg-light rounded-3">
+                    <h6 class="fw-semibold mb-2"><img src="https://img.icons8.com/fluency/18/info.png" alt=""> What you'll get:</h6>
+                    <div class="row g-2">
+                        <div class="col-6 small"><img src="https://img.icons8.com/fluency/16/checkmark--v1.png" alt=""> Resume Score (0-100)</div>
+                        <div class="col-6 small"><img src="https://img.icons8.com/fluency/16/checkmark--v1.png" alt=""> ATS Compatibility</div>
+                        <div class="col-6 small"><img src="https://img.icons8.com/fluency/16/checkmark--v1.png" alt=""> Skill Gap Analysis</div>
+                        <div class="col-6 small"><img src="https://img.icons8.com/fluency/16/checkmark--v1.png" alt=""> Job Matches</div>
+                        <div class="col-6 small"><img src="https://img.icons8.com/fluency/16/checkmark--v1.png" alt=""> Formatting Feedback</div>
+                        <div class="col-6 small"><img src="https://img.icons8.com/fluency/16/checkmark--v1.png" alt=""> Course Recommendations</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+function handleFileSelect(event) {
+    const file = event.target.files[0];
+    if (file) {
+        document.getElementById('fileName').textContent = file.name;
+        document.getElementById('dropText').textContent = file.name;
+        document.getElementById('submitBtn').disabled = false;
+    }
+}
+function handleDrop(event) {
+    event.preventDefault();
+    const zone = document.getElementById('dropZone');
+    zone.classList.remove('drag-over');
+    const file = event.dataTransfer.files[0];
+    if (file) {
+        const input = document.getElementById('resume_file');
+        const dt = new DataTransfer();
+        dt.items.add(file);
+        input.files = dt.files;
+        document.getElementById('fileName').textContent = file.name;
+        document.getElementById('dropText').textContent = file.name;
+        document.getElementById('submitBtn').disabled = false;
+    }
+}
+</script>
+{% endblock %}

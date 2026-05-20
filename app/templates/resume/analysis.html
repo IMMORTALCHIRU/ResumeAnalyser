@@ -1,0 +1,165 @@
+{% extends 'base.html' %}
+{% block title %}Resume Analysis – Smart Resume Analyser{% endblock %}
+{% block content %}
+<div class="container py-5 mt-4">
+    <div class="d-flex align-items-center gap-3 mb-4">
+        <a href="{{ url_for('user_dashboard.dashboard') }}" class="btn btn-outline-secondary btn-sm">
+            <i class="bi bi-arrow-left"></i> Dashboard
+        </a>
+        <h2 class="fw-bold mb-0 ms-2">
+            <img src="https://img.icons8.com/fluency/32/resume.png" alt=""> Resume Analysis
+        </h2>
+        <a href="{{ url_for('resume.upload') }}" class="btn btn-primary ms-auto btn-sm">
+            <img src="https://img.icons8.com/fluency/16/upload-to-cloud.png" alt=""> Upload New
+        </a>
+    </div>
+
+    <div class="row g-3 mb-4">
+        <div class="col-lg-3 col-md-6">
+            <div class="card text-center border-0 shadow-sm p-3">
+                <img src="https://img.icons8.com/fluency/40/score.png" alt="" class="mx-auto mb-2">
+                <div class="fw-bold fs-2 {% if resume.resume_score >= 70 %}text-success{% elif resume.resume_score >= 40 %}text-warning{% else %}text-danger{% endif %}">{{ resume.resume_score }}%</div>
+                <div class="text-muted small">Overall Score</div>
+                <div class="progress mt-2" style="height:6px;"><div class="progress-bar {% if resume.resume_score >= 70 %}bg-success{% elif resume.resume_score >= 40 %}bg-warning{% else %}bg-danger{% endif %}" style="width:{{ resume.resume_score }}%"></div></div>
+            </div>
+        </div>
+        <div class="col-lg-3 col-md-6">
+            <div class="card text-center border-0 shadow-sm p-3">
+                <img src="https://img.icons8.com/fluency/40/security-checked.png" alt="" class="mx-auto mb-2">
+                <div class="fw-bold fs-2 {% if resume.ats_score >= 70 %}text-success{% elif resume.ats_score >= 40 %}text-warning{% else %}text-danger{% endif %}">{{ resume.ats_score }}%</div>
+                <div class="text-muted small">ATS Compatibility</div>
+                <div class="progress mt-2" style="height:6px;"><div class="progress-bar {% if resume.ats_score >= 70 %}bg-success{% elif resume.ats_score >= 40 %}bg-warning{% else %}bg-danger{% endif %}" style="width:{{ resume.ats_score }}%"></div></div>
+            </div>
+        </div>
+        <div class="col-lg-3 col-md-6">
+            <div class="card text-center border-0 shadow-sm p-3">
+                <img src="https://img.icons8.com/fluency/40/format.png" alt="" class="mx-auto mb-2">
+                <div class="fw-bold fs-2 {% if resume.formatting_score >= 70 %}text-success{% elif resume.formatting_score >= 40 %}text-warning{% else %}text-danger{% endif %}">{{ resume.formatting_score }}%</div>
+                <div class="text-muted small">Formatting</div>
+                <div class="progress mt-2" style="height:6px;"><div class="progress-bar {% if resume.formatting_score >= 70 %}bg-success{% elif resume.formatting_score >= 40 %}bg-warning{% else %}bg-danger{% endif %}" style="width:{{ resume.formatting_score }}%"></div></div>
+            </div>
+        </div>
+        <div class="col-lg-3 col-md-6">
+            <div class="card text-center border-0 shadow-sm p-3">
+                <img src="https://img.icons8.com/fluency/40/graph.png" alt="" class="mx-auto mb-2">
+                <div class="fw-bold fs-2">{{ resume.skill_gap|length }}</div>
+                <div class="text-muted small">Skills to Improve</div>
+                <a href="{{ url_for('resume.skill_gap') }}" class="btn btn-outline-warning btn-sm mt-2 w-100">View Gap</a>
+            </div>
+        </div>
+    </div>
+
+    <div class="row g-4">
+        <div class="col-lg-4">
+            <div class="card border-0 shadow-sm mb-4">
+                <div class="card-header bg-white py-3">
+                    <h6 class="mb-0 fw-semibold"><img src="https://img.icons8.com/fluency/20/user-male-circle.png" alt=""> Profile Summary</h6>
+                </div>
+                <div class="card-body">
+                    <p class="mb-2"><strong>Field:</strong> <span class="badge bg-primary">{{ resume.predicted_field }}</span></p>
+                    <p class="mb-2"><strong>Level:</strong> <span class="badge bg-info text-dark">{{ resume.candidate_level }}</span></p>
+                    <p class="mb-2"><strong>Experience:</strong> {{ resume.experience_years }} years</p>
+                    <p class="mb-2"><strong>Pages:</strong> {{ resume.page_count }}</p>
+                    <p class="mb-0"><strong>Skills Found:</strong> {{ resume.skills|length }}</p>
+                </div>
+            </div>
+            <div class="card border-0 shadow-sm">
+                <div class="card-header bg-white py-3">
+                    <h6 class="mb-0 fw-semibold"><img src="https://img.icons8.com/fluency/20/checklist.png" alt=""> Section Checklist</h6>
+                </div>
+                <div class="card-body">
+                    {% for label, present in [('Objective/Summary', resume.has_objective), ('Projects', resume.has_projects), ('Achievements', resume.has_achievements), ('Hobbies', resume.has_hobbies), ('Declaration', resume.has_declaration)] %}
+                    <div class="d-flex align-items-center gap-2 mb-2">
+                        {% if present %}<img src="https://img.icons8.com/fluency/18/checkmark--v1.png" alt=""><span class="text-success small">{{ label }}</span>
+                        {% else %}<img src="https://img.icons8.com/fluency/18/cancel.png" alt=""><span class="text-muted small">{{ label }} <em>(missing)</em></span>{% endif %}
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-8">
+            <div class="card border-0 shadow-sm mb-4">
+                <div class="card-header bg-white py-3">
+                    <h6 class="mb-0 fw-semibold"><img src="https://img.icons8.com/fluency/20/skills.png" alt=""> Detected Skills ({{ resume.skills|length }})</h6>
+                </div>
+                <div class="card-body">
+                    <div class="d-flex flex-wrap gap-2">
+                        {% for skill in resume.skills %}
+                        <span class="badge bg-primary-subtle text-primary rounded-pill px-3 py-2">{{ skill }}</span>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+
+            {% if resume.strengths %}
+            <div class="card border-0 shadow-sm mb-4">
+                <div class="card-header bg-white py-3">
+                    <h6 class="mb-0 fw-semibold text-success"><img src="https://img.icons8.com/fluency/20/thumbs-up.png" alt=""> Strengths</h6>
+                </div>
+                <div class="card-body">
+                    {% for s in resume.strengths %}<div class="d-flex align-items-center gap-2 mb-2"><img src="https://img.icons8.com/fluency/18/checkmark--v1.png" alt=""><span>{{ s }}</span></div>{% endfor %}
+                </div>
+            </div>
+            {% endif %}
+
+            {% if resume.improvements %}
+            <div class="card border-0 shadow-sm mb-4">
+                <div class="card-header bg-white py-3">
+                    <h6 class="mb-0 fw-semibold text-warning"><img src="https://img.icons8.com/fluency/20/idea.png" alt=""> Suggestions</h6>
+                </div>
+                <div class="card-body">
+                    {% for tip in resume.improvements %}<div class="d-flex align-items-start gap-2 mb-2"><img src="https://img.icons8.com/fluency/18/idea.png" alt="" class="mt-1"><span>{{ tip }}</span></div>{% endfor %}
+                </div>
+            </div>
+            {% endif %}
+
+            <div class="row g-3">
+                {% if resume.education %}
+                <div class="col-md-6">
+                    <div class="card border-0 shadow-sm">
+                        <div class="card-header bg-white py-3"><h6 class="mb-0 fw-semibold"><img src="https://img.icons8.com/fluency/20/graduation-cap.png" alt=""> Education</h6></div>
+                        <div class="card-body">{% for edu in resume.education[:3] %}<p class="small text-muted mb-2">{{ edu[:120] }}{% if edu|length > 120 %}...{% endif %}</p>{% endfor %}</div>
+                    </div>
+                </div>
+                {% endif %}
+                {% if resume.certifications %}
+                <div class="col-md-6">
+                    <div class="card border-0 shadow-sm">
+                        <div class="card-header bg-white py-3"><h6 class="mb-0 fw-semibold"><img src="https://img.icons8.com/fluency/20/certificate.png" alt=""> Certifications</h6></div>
+                        <div class="card-body">{% for cert in resume.certifications[:3] %}<p class="small text-muted mb-2">{{ cert[:120] }}{% if cert|length > 120 %}...{% endif %}</p>{% endfor %}</div>
+                    </div>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    {% if job_matches %}
+    <div class="mt-4">
+        <div class="card border-0 shadow-sm">
+            <div class="card-header bg-white py-3 d-flex justify-content-between align-items-center">
+                <h6 class="mb-0 fw-semibold"><img src="https://img.icons8.com/fluency/24/job.png" alt=""> Matching Jobs</h6>
+                <a href="{{ url_for('resume.job_recommendations') }}" class="btn btn-outline-primary btn-sm">View All</a>
+            </div>
+            <div class="card-body">
+                <div class="row g-3">
+                    {% for item in job_matches %}
+                    <div class="col-lg-4 col-md-6">
+                        <div class="border rounded-3 p-3">
+                            <div class="d-flex justify-content-between mb-2">
+                                <div><h6 class="fw-semibold mb-1">{{ item.job.title }}</h6><small class="text-muted">{{ item.job.company }}</small></div>
+                                <span class="badge {% if item.match.match_score >= 70 %}bg-success{% elif item.match.match_score >= 40 %}bg-warning text-dark{% else %}bg-secondary{% endif %} rounded-pill">{{ item.match.match_score }}%</span>
+                            </div>
+                            <div class="progress mb-2" style="height:5px;"><div class="progress-bar {% if item.match.match_score >= 70 %}bg-success{% elif item.match.match_score >= 40 %}bg-warning{% else %}bg-secondary{% endif %}" style="width:{{ item.match.match_score }}%"></div></div>
+                            <small class="text-muted">{{ item.match.recommendation }}</small>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

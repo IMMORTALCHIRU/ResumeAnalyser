@@ -1,0 +1,66 @@
+{% extends 'base.html' %}
+{% block title %}Manage Jobs – Smart Resume Analyser{% endblock %}
+{% block content %}
+<div class="container py-5 mt-4">
+    <div class="d-flex align-items-center gap-3 mb-4">
+        <a href="{{ url_for('recruiter.dashboard') }}" class="btn btn-outline-secondary btn-sm"><i class="bi bi-arrow-left"></i> Dashboard</a>
+        <h2 class="fw-bold mb-0"><img src="https://img.icons8.com/fluency/32/job.png" alt=""> Manage Jobs</h2>
+        <a href="{{ url_for('recruiter.create_job') }}" class="btn btn-warning ms-auto">
+            <img src="https://img.icons8.com/fluency/20/add.png" alt=""> Post New Job
+        </a>
+    </div>
+
+    {% if jobs %}
+    <div class="row g-4">
+        {% for job in jobs %}
+        <div class="col-lg-6">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-body p-4">
+                    <div class="d-flex align-items-start justify-content-between mb-2">
+                        <div>
+                            <h5 class="fw-bold mb-1">{{ job.title }}</h5>
+                            <p class="text-muted mb-1">{{ job.company }}</p>
+                            {% if job.location %}<small class="text-muted"><i class="bi bi-geo-alt"></i> {{ job.location }}</small>{% endif %}
+                        </div>
+                        <span class="badge {% if job.is_active %}bg-success{% else %}bg-secondary{% endif %}">{{ 'Active' if job.is_active else 'Closed' }}</span>
+                    </div>
+                    <div class="d-flex gap-2 mb-3 flex-wrap">
+                        <span class="badge bg-primary-subtle text-primary">{{ job.job_type }}</span>
+                        {% if job.experience_min > 0 %}<span class="badge bg-secondary-subtle text-secondary">{{ job.experience_min }}+ yrs</span>{% endif %}
+                        {% if job.shortlisted %}<span class="badge bg-success-subtle text-success"><i class="bi bi-bookmark-fill"></i> {{ job.shortlisted|length }} shortlisted</span>{% endif %}
+                    </div>
+                    <div class="d-flex flex-wrap gap-1 mb-3">
+                        {% for skill in job.required_skills[:5] %}<span class="badge bg-light text-dark border" style="font-size:0.7rem;">{{ skill }}</span>{% endfor %}
+                        {% if job.required_skills|length > 5 %}<span class="badge bg-light text-muted border" style="font-size:0.7rem;">+{{ job.required_skills|length - 5 }}</span>{% endif %}
+                    </div>
+                    <div class="d-flex gap-2 flex-wrap">
+                        <a href="{{ url_for('recruiter.job_candidates', job_id=job.id) }}" class="btn btn-outline-primary btn-sm">
+                            <img src="https://img.icons8.com/fluency/16/conference-call.png" alt=""> Candidates
+                        </a>
+                        <a href="{{ url_for('recruiter.edit_job', job_id=job.id) }}" class="btn btn-outline-secondary btn-sm">
+                            <i class="bi bi-pencil"></i> Edit
+                        </a>
+                        <form method="POST" action="{{ url_for('recruiter.delete_job', job_id=job.id) }}" onsubmit="return confirm('Delete this job?')">
+                            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                            <button type="submit" class="btn btn-outline-danger btn-sm">
+                                <i class="bi bi-trash"></i> Delete
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+    <div class="text-center py-5">
+        <img src="https://img.icons8.com/fluency/80/job.png" alt="" class="mb-3">
+        <h4 class="fw-bold">No Jobs Posted Yet</h4>
+        <p class="text-muted mb-4">Create your first job posting to start receiving AI-matched candidates.</p>
+        <a href="{{ url_for('recruiter.create_job') }}" class="btn btn-warning">
+            <img src="https://img.icons8.com/fluency/20/add.png" alt=""> Post First Job
+        </a>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

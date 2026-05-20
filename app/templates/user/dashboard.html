@@ -1,0 +1,196 @@
+{% extends 'base.html' %}
+{% block title %}My Dashboard – Smart Resume Analyser{% endblock %}
+{% block content %}
+<div class="container py-5 mt-4">
+
+    <!-- Welcome Header -->
+    <div class="d-flex align-items-center gap-3 mb-4">
+        <div class="user-avatar-lg" style="background-color: {{ current_user.avatar_color }}; width:56px; height:56px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-weight:700; font-size:1.3rem; color:#fff;">
+            {{ current_user.get_initials() }}
+        </div>
+        <div>
+            <h2 class="fw-bold mb-0">Hello, {{ current_user.name }}!</h2>
+            <p class="text-muted mb-0">Here's your career overview</p>
+        </div>
+        <a href="{{ url_for('resume.upload') }}" class="btn btn-primary ms-auto">
+            <img src="https://img.icons8.com/fluency/20/upload-to-cloud.png" alt=""> Upload Resume
+        </a>
+    </div>
+
+    <!-- Stats Row -->
+    <div class="row g-3 mb-4">
+        <div class="col-lg-3 col-md-6">
+            <div class="stat-card p-3 rounded-3 border text-center">
+                <img src="https://img.icons8.com/fluency/40/resume.png" alt="" class="mb-2">
+                <div class="stat-number fw-bold fs-3">{{ all_resumes|length }}</div>
+                <div class="text-muted small">Resumes Uploaded</div>
+            </div>
+        </div>
+        <div class="col-lg-3 col-md-6">
+            <div class="stat-card p-3 rounded-3 border text-center">
+                <img src="https://img.icons8.com/fluency/40/score.png" alt="" class="mb-2">
+                <div class="stat-number fw-bold fs-3 {% if resume and resume.resume_score >= 70 %}text-success{% elif resume and resume.resume_score >= 40 %}text-warning{% else %}text-danger{% endif %}">
+                    {{ resume.resume_score if resume else 0 }}%
+                </div>
+                <div class="text-muted small">Latest Resume Score</div>
+            </div>
+        </div>
+        <div class="col-lg-3 col-md-6">
+            <div class="stat-card p-3 rounded-3 border text-center">
+                <img src="https://img.icons8.com/fluency/40/job.png" alt="" class="mb-2">
+                <div class="stat-number fw-bold fs-3">{{ job_matches|length }}</div>
+                <div class="text-muted small">Job Matches</div>
+            </div>
+        </div>
+        <div class="col-lg-3 col-md-6">
+            <div class="stat-card p-3 rounded-3 border text-center">
+                <img src="https://img.icons8.com/fluency/40/graph.png" alt="" class="mb-2">
+                <div class="stat-number fw-bold fs-3">{{ resume.skill_gap|length if resume else 0 }}</div>
+                <div class="text-muted small">Skills to Improve</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row g-4">
+        <!-- Resume Overview -->
+        <div class="col-lg-7">
+            {% if resume %}
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-header bg-white border-bottom d-flex align-items-center justify-content-between py-3">
+                    <h5 class="mb-0 fw-semibold">
+                        <img src="https://img.icons8.com/fluency/24/resume.png" alt=""> Latest Resume Analysis
+                    </h5>
+                    <a href="{{ url_for('resume.analysis', resume_id=resume.id) }}" class="btn btn-outline-primary btn-sm">View Full Report</a>
+                </div>
+                <div class="card-body">
+                    <div class="row g-3 mb-3">
+                        <div class="col-4 text-center">
+                            <div class="score-circle mx-auto" style="--score: {{ resume.resume_score }}">
+                                <span class="score-value fw-bold fs-4">{{ resume.resume_score }}</span>
+                                <span class="score-label d-block text-muted" style="font-size:0.7rem;">Overall</span>
+                            </div>
+                        </div>
+                        <div class="col-4 text-center">
+                            <div class="score-circle mx-auto" style="--score: {{ resume.ats_score }}">
+                                <span class="score-value fw-bold fs-4">{{ resume.ats_score }}</span>
+                                <span class="score-label d-block text-muted" style="font-size:0.7rem;">ATS</span>
+                            </div>
+                        </div>
+                        <div class="col-4 text-center">
+                            <div class="score-circle mx-auto" style="--score: {{ resume.formatting_score }}">
+                                <span class="score-value fw-bold fs-4">{{ resume.formatting_score }}</span>
+                                <span class="score-label d-block text-muted" style="font-size:0.7rem;">Format</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="mb-2">
+                        <small class="text-muted">Field: <span class="fw-semibold">{{ resume.predicted_field }}</span></small>
+                        <span class="mx-2">·</span>
+                        <small class="text-muted">Level: <span class="fw-semibold">{{ resume.candidate_level }}</span></small>
+                        <span class="mx-2">·</span>
+                        <small class="text-muted">Experience: <span class="fw-semibold">{{ resume.experience_years }} yrs</span></small>
+                    </div>
+                    <div class="mb-3">
+                        <strong class="small">Skills:</strong>
+                        <div class="d-flex flex-wrap gap-1 mt-1">
+                            {% for skill in resume.skills[:10] %}
+                            <span class="badge bg-primary-subtle text-primary">{{ skill }}</span>
+                            {% endfor %}
+                            {% if resume.skills|length > 10 %}
+                            <span class="badge bg-secondary-subtle text-secondary">+{{ resume.skills|length - 10 }} more</span>
+                            {% endif %}
+                        </div>
+                    </div>
+                    <div class="d-flex gap-2 flex-wrap">
+                        <a href="{{ url_for('resume.skill_gap') }}" class="btn btn-outline-warning btn-sm">
+                            <img src="https://img.icons8.com/fluency/16/graph.png" alt=""> Skill Gap
+                        </a>
+                        <a href="{{ url_for('resume.job_recommendations') }}" class="btn btn-outline-success btn-sm">
+                            <img src="https://img.icons8.com/fluency/16/job.png" alt=""> Job Matches
+                        </a>
+                        <a href="{{ url_for('resume.upload') }}" class="btn btn-outline-primary btn-sm">
+                            <img src="https://img.icons8.com/fluency/16/upload-to-cloud.png" alt=""> Re-upload
+                        </a>
+                    </div>
+                </div>
+            </div>
+            {% else %}
+            <div class="card border-0 shadow-sm text-center p-5">
+                <img src="https://img.icons8.com/fluency/80/resume.png" alt="" class="mb-3">
+                <h5 class="fw-bold">No Resume Yet</h5>
+                <p class="text-muted mb-4">Upload your resume to get AI-powered analysis, job matches, and skill gap insights.</p>
+                <a href="{{ url_for('resume.upload') }}" class="btn btn-primary">
+                    <img src="https://img.icons8.com/fluency/20/upload-to-cloud.png" alt=""> Upload Your Resume
+                </a>
+            </div>
+            {% endif %}
+        </div>
+
+        <!-- Job Matches -->
+        <div class="col-lg-5">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-header bg-white border-bottom d-flex align-items-center justify-content-between py-3">
+                    <h5 class="mb-0 fw-semibold">
+                        <img src="https://img.icons8.com/fluency/24/job.png" alt=""> Top Job Matches
+                    </h5>
+                    <a href="{{ url_for('resume.job_recommendations') }}" class="btn btn-outline-success btn-sm">View All</a>
+                </div>
+                <div class="card-body p-0">
+                    {% if job_matches %}
+                    <ul class="list-group list-group-flush">
+                        {% for item in job_matches %}
+                        <li class="list-group-item px-3 py-3">
+                            <div class="d-flex align-items-center gap-3">
+                                <img src="https://img.icons8.com/fluency/36/briefcase.png" alt="">
+                                <div class="flex-grow-1">
+                                    <div class="fw-semibold">{{ item.job.title }}</div>
+                                    <small class="text-muted">{{ item.job.company }}</small>
+                                </div>
+                                <span class="badge {% if item.match.match_score >= 70 %}bg-success{% elif item.match.match_score >= 40 %}bg-warning text-dark{% else %}bg-secondary{% endif %} rounded-pill">
+                                    {{ item.match.match_score }}%
+                                </span>
+                            </div>
+                        </li>
+                        {% endfor %}
+                    </ul>
+                    {% else %}
+                    <div class="text-center p-4">
+                        <img src="https://img.icons8.com/fluency/48/job.png" alt="" class="mb-2">
+                        <p class="text-muted small">Upload a resume and jobs will be posted by recruiters to get matched!</p>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <!-- Course Recommendations -->
+        {% if recommendations and recommendations.recommended_courses %}
+        <div class="col-12">
+            <div class="card border-0 shadow-sm">
+                <div class="card-header bg-white border-bottom py-3">
+                    <h5 class="mb-0 fw-semibold">
+                        <img src="https://img.icons8.com/fluency/24/learning.png" alt=""> Recommended Courses
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="row g-3">
+                        {% for course in recommendations.recommended_courses %}
+                        <div class="col-lg-4 col-md-6">
+                            <div class="border rounded-3 p-3 h-100">
+                                <img src="https://img.icons8.com/fluency/32/graduation-cap.png" alt="" class="mb-2">
+                                <h6 class="fw-semibold mb-1">{{ course.name }}</h6>
+                                <span class="badge bg-secondary-subtle text-secondary mb-2">{{ course.platform }}</span>
+                                <a href="{{ course.url }}" target="_blank" rel="noopener noreferrer" class="btn btn-outline-primary btn-sm d-block">
+                                    <i class="bi bi-box-arrow-up-right"></i> Start Course
+                                </a>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
