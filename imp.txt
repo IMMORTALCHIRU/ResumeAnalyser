@@ -1,0 +1,41 @@
+# Environment Configuration Template for Smart Resume Analyser
+# Copy to .env and fill in with your actual values
+
+# Flask Configuration
+SECRET_KEY=your-secret-key-here
+FLASK_ENV=development
+
+# MongoDB Configuration
+MONGO_URI=mongodb://localhost:27017/smart_resume_analyser
+
+# File Upload Configuration
+UPLOAD_FOLDER=app/static/uploads
+MAX_CONTENT_LENGTH=16777216
+
+# ===== EMBEDDING & SEMANTIC MATCHING CONFIG =====
+
+# Semantic Skill Embedding Model
+# Uses sentence-transformers model for skill embeddings
+EMBEDDING_MODEL=all-MiniLM-L6-v2
+
+# Semantic Similarity Threshold (0.0 to 1.0)
+# Skills with similarity score above this are considered a match
+SEMANTIC_SIMILARITY_THRESHOLD=0.75
+
+# Skill Enhancement Threshold (0.0 to 1.0)
+# During resume parsing, skills with similarity above this are added
+SKILL_ENHANCEMENT_THRESHOLD=0.75
+
+# Hybrid Scoring Weights (for job matching)
+# Must sum to 1.0
+# Keyword matching weight (exact skill match)
+KEYWORD_MATCH_WEIGHT=0.4
+
+# Semantic matching weight (embedding-based similarity)
+SEMANTIC_MATCH_WEIGHT=0.4
+
+# Experience matching weight (years of experience alignment)
+EXPERIENCE_MATCH_WEIGHT=0.2
+
+# Maximum number of embeddings to cache in memory
+EMBEDDING_CACHE_MAX_SIZE=10000
