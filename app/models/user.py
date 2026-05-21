@@ -89,15 +89,35 @@ class User(UserMixin):
         return False
 
     def get_initials(self):
-        names = self.name.split()
-        if len(names) >= 2:
-            return (names[0][0] + names[1][0]).upper()
-        return self.name[0:2].upper()
+        try:
+            if self.name and self.name.strip():
+                names = self.name.split()
+                if len(names) >= 2:
+                    return (names[0][0] + names[1][0]).upper()
+                return self.name[0:2].upper()
+            if self.email and self.email.strip():
+                prefix = self.email.split('@')[0]
+                return prefix[0:2].upper()
+        except Exception:
+            pass
+        return 'UU'
+
+    def get_display_name(self):
+        """Return a safe display name for UI.
+
+        Priority: `name` -> email prefix -> 'Unknown User'
+        """
+        if self.name and str(self.name).strip():
+            return str(self.name).strip()
+        if self.email and str(self.email).strip():
+            return str(self.email).split('@')[0]
+        return 'Unknown User'
 
     def to_dict(self):
         return {
             'id': self.id,
             'name': self.name,
+            'display_name': self.get_display_name(),
             'email': self.email,
             'role': self.role,
             'preferred_roles': self.preferred_roles,

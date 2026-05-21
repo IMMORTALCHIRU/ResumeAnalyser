@@ -4,6 +4,8 @@ from flask_login import LoginManager
 from flask_wtf.csrf import CSRFProtect
 import os
 from dotenv import load_dotenv
+from datetime import datetime, timezone
+from zoneinfo import ZoneInfo
 
 load_dotenv()
 
@@ -53,5 +55,47 @@ def create_app():
     @login_manager.user_loader
     def load_user(user_id):
         return User.get_by_id(user_id)
+
+    # Jinja helper to fetch a user's display name by DB id (avoid relying on resume-parsed names)
+    def _get_user_display_name(user_id):
+        try:
+            if not user_id:
+                return 'Unknown Candidate'
+            u = User.get_by_id(user_id)
+            return u.get_display_name() if u else 'Unknown Candidate'
+        except Exception:
+            return 'Unknown Candidate'
+
+    app.jinja_env.globals['get_user_display_name'] = _get_user_display_name
+
+    # Jinja filter: format datetime to IST
+    def format_datetime_ist(value, fmt: str = "%d %b %Y, %I:%M %p %Z", default: str = 'Unknown date'):
+        """Format a datetime (or ISO string) into IST timezone for templates.
+
+        - If `value` is falsy, returns `default`.
+        - If `value` is a naive datetime it's assumed to be UTC and converted to IST.
+        - If `value` is a string, attempt ISO parsing; otherwise return the raw string.
+        """
+        if not value:
+            return default
+        try:
+            # Parse strings if necessary
+            if isinstance(value, str):
+                try:
+                    dt = datetime.fromisoformat(value)
+                except Exception:
+                    return value
+            else:
+                dt = value
+
+            if dt.tzinfo is None:
+                dt = dt.replace(tzinfo=timezone.utc)
+            ist = dt.astimezone(ZoneInfo("Asia/Kolkata"))
+            return ist.strftime(fmt)
+        except Exception as e:
+            app.logger.exception("Failed to format datetime to IST: %s", e)
+            return default
+
+    app.jinja_env.filters['format_datetime_ist'] = format_datetime_ist
 
     return app

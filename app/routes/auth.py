@@ -61,7 +61,7 @@ def login():
                 flash('Please use the Recruiter Login portal.', 'error')
                 return redirect(url_for('auth.recruiter_login'))
             login_user(user, remember=remember)
-            flash(f'Welcome back, {user.name}!', 'success')
+            flash(f'Welcome back, {user.get_display_name()}!', 'success')
             next_page = request.args.get('next')
             return redirect(next_page or url_for('user_dashboard.dashboard'))
         else:
@@ -131,7 +131,7 @@ def recruiter_login():
         user = User.get_by_email(email)
         if user and user.is_recruiter and user.check_password(password):
             login_user(user)
-            flash(f'Welcome, {user.name}! Recruiter portal loaded.', 'success')
+            flash(f'Welcome, {user.get_display_name()}! Recruiter portal loaded.', 'success')
             return redirect(url_for('recruiter.dashboard'))
         else:
             flash('Invalid recruiter credentials', 'error')

@@ -50,10 +50,10 @@
                 <div class="card-body p-4">
                     <div class="d-flex align-items-start gap-3 mb-3">
                         <div class="user-avatar" style="background-color: {{ r.avatar_color or '#6366f1' }}; width:48px; height:48px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-weight:700; font-size:1rem; color:#fff; flex-shrink:0;">
-                            {{ (r.user_name or 'U')[0].upper() }}
+                            {{ (r.user_name or get_user_display_name(r.user_id) or 'U')[0].upper() }}
                         </div>
                         <div class="flex-grow-1">
-                            <h6 class="fw-bold mb-1">{{ r.user_name or 'Unknown Candidate' }}</h6>
+                            <h6 class="fw-bold mb-1">{{ r.user_name or get_user_display_name(r.user_id) or 'Unknown Candidate' }}</h6>
                             <small class="text-muted">{{ r.user_email or '' }}</small>
                         </div>
                         <div class="text-center">

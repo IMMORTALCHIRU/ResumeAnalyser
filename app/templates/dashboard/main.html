@@ -17,7 +17,7 @@
                     <!-- Welcome Header -->
                     <div class="dashboard-header">
                         <div class="welcome-text">
-                            <h1>Welcome back, <span class="gradient-text">{{ current_user.name.split()[0] }}</span>! 👋</h1>
+                            <h1>Welcome back, <span class="gradient-text">{{ current_user.get_display_name().split()[0] }}</span>! 👋</h1>
                             <p>Here's an overview of your interview preparation progress</p>
                         </div>
                         <div class="header-actions">
@@ -221,7 +221,7 @@
                                             </div>
                                             <div class="interview-info">
                                                 <h4>{{ interview.interview_type }}</h4>
-                                                <p>{{ interview.completed_at.strftime('%B %d, %Y at %I:%M %p') if interview.completed_at else 'N/A' }}</p>
+                                                <p>{{ interview.completed_at | format_datetime_ist('%B %d, %Y at %I:%M %p', 'N/A') }}</p>
                                             </div>
                                             <div class="interview-score">
                                                 <span class="score {{ 'excellent' if interview.score >= 80 else 'good' if interview.score >= 60 else 'average' if interview.score >= 40 else 'poor' }}">

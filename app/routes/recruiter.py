@@ -47,6 +47,15 @@ def dashboard():
 
     # Top applicants (sorted by score)
     top_applicants = sorted(all_resumes, key=lambda r: r.resume_score, reverse=True)[:5]
+    # Ensure display names and emails are attached from the DB (avoid relying on parsed resume)
+    for resume in top_applicants:
+        user = User.get_by_id(resume.user_id)
+        if user:
+            resume.user_name = user.get_display_name()
+            resume.user_email = user.email
+        else:
+            resume.user_name = 'Unknown Candidate'
+            resume.user_email = ''
     # Recent jobs (limit)
     recent_jobs = all_jobs[:6]
 
@@ -87,7 +96,7 @@ def applicants():
     for resume in all_resumes:
         user = User.get_by_id(resume.user_id)
         if user:
-            resume.user_name = user.name
+            resume.user_name = user.get_display_name()
             resume.user_email = user.email
         else:
             resume.user_name = 'Unknown Candidate'
@@ -115,7 +124,7 @@ def applicant_detail(resume_id):
         return redirect(url_for('recruiter.applicants'))
     user = User.get_by_id(resume.user_id)
     if user:
-        resume.user_name = user.name
+        resume.user_name = user.get_display_name()
         resume.user_email = user.email
     else:
         resume.user_name = 'Unknown Candidate'
@@ -226,7 +235,7 @@ def job_candidates(job_id):
     for c in candidates:
         user = User.get_by_id(c['resume'].user_id)
         if user:
-            c['resume'].user_name = user.name
+            c['resume'].user_name = user.get_display_name()
             c['resume'].user_email = user.email
         else:
             c['resume'].user_name = 'Unknown Candidate'
@@ -258,7 +267,7 @@ def shortlisted():
                     resume = Resume.get_by_id(resume_id)
                     if resume:
                         user = User.get_by_id(resume.user_id)
-                        resume.user_name = user.name if user else 'Unknown Candidate'
+                        resume.user_name = user.get_display_name() if user else 'Unknown Candidate'
                         resume.user_email = user.email if user else ''
                         shortlisted_resumes[resume_id] = {
                             'resume': resume,

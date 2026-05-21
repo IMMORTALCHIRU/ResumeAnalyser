@@ -18,7 +18,7 @@
                         <img src="https://img.icons8.com/fluency/48/resume.png" alt="">
                         <div class="flex-grow-1">
                             <h6 class="fw-bold mb-1">{{ r.filename }}</h6>
-                            <small class="text-muted">{{ r.created_at.strftime('%d %b %Y, %I:%M %p') if r.created_at else 'Unknown date' }}</small>
+                            <small class="text-muted">{{ r.created_at | format_datetime_ist('%d %b %Y, %I:%M %p %Z') }}</small>
                             <div class="d-flex gap-3 mt-2">
                                 <div class="text-center">
                                     <div class="fw-bold {% if r.resume_score >= 70 %}text-success{% elif r.resume_score >= 40 %}text-warning{% else %}text-danger{% endif %}">{{ r.resume_score }}%</div>

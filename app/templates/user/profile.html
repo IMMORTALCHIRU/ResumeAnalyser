@@ -9,7 +9,7 @@
                     <div class="user-avatar-xl mx-auto mb-3" style="background-color:{{ current_user.avatar_color }}; width:80px; height:80px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-weight:700; font-size:2rem; color:#fff;">
                         {{ current_user.get_initials() }}
                     </div>
-                    <h3 class="fw-bold mb-0">{{ current_user.name }}</h3>
+                    <h3 class="fw-bold mb-0">{{ current_user.get_display_name() }}</h3>
                     <small class="text-muted">{{ current_user.email }}</small>
                 </div>
                 <form method="POST" class="auth-form">

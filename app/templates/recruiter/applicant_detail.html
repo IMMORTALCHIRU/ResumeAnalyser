@@ -13,9 +13,9 @@
             <div class="card border-0 shadow-sm p-4 mb-4">
                 <div class="text-center mb-3">
                     <div class="user-avatar-xl mx-auto mb-3" style="background-color: {{ resume.avatar_color or '#6366f1' }}; width:72px; height:72px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-weight:700; font-size:1.6rem; color:#fff;">
-                        {{ (resume.user_name or 'U')[0].upper() }}
+                        {{ (resume.user_name or get_user_display_name(resume.user_id) or 'U')[0].upper() }}
                     </div>
-                    <h5 class="fw-bold mb-1">{{ resume.user_name or 'Unknown' }}</h5>
+                    <h5 class="fw-bold mb-1">{{ resume.user_name or get_user_display_name(resume.user_id) or 'Unknown' }}</h5>
                     <p class="text-muted small mb-1">{{ resume.user_email or '' }}</p>
                     {% if resume.contact_info and resume.contact_info.phone %}<p class="text-muted small mb-0"><i class="bi bi-telephone"></i> {{ resume.contact_info.phone }}</p>{% endif %}
                 </div>

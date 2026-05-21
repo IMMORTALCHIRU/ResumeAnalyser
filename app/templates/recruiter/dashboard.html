@@ -7,7 +7,7 @@
         <img src="https://img.icons8.com/fluency/48/human-resources.png" alt="">
         <div>
             <h2 class="fw-bold mb-0">Recruiter Dashboard</h2>
-            <p class="text-muted mb-0">Welcome, {{ current_user.name }} <span class="badge bg-warning text-dark ms-1">HR</span></p>
+            <p class="text-muted mb-0">Welcome, {{ current_user.get_display_name() }} <span class="badge bg-warning text-dark ms-1">HR</span></p>
         </div>
         <a href="{{ url_for('recruiter.create_job') }}" class="btn btn-warning ms-auto">
             <img src="https://img.icons8.com/fluency/20/add.png" alt=""> Post a Job
@@ -83,7 +83,7 @@
                                 {% for r in top_resumes %}
                                 <tr>
                                     <td>
-                                        <div class="fw-semibold">{{ r.user_name or 'Unknown' }}</div>
+                                        <div class="fw-semibold">{{ r.user_name or get_user_display_name(r.user_id) or 'Unknown' }}</div>
                                         <small class="text-muted">{{ r.experience_years }} yrs exp</small>
                                     </td>
                                     <td><span class="badge bg-primary-subtle text-primary">{{ r.predicted_field }}</span></td>

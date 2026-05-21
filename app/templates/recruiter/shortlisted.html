@@ -38,10 +38,10 @@
                 <div class="card-body p-4">
                     <div class="d-flex align-items-start gap-3 mb-3">
                         <div class="user-avatar" style="background-color: {{ item.resume.avatar_color or '#6366f1' }}; width:56px; height:56px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-weight:700; font-size:1.25rem; color:#fff; flex-shrink:0;">
-                            {{ (item.resume.user_name or 'U')[0].upper() }}
+                            {{ (item.resume.user_name or get_user_display_name(item.resume.user_id) or 'U')[0].upper() }}
                         </div>
                         <div class="flex-grow-1">
-                            <h6 class="fw-bold mb-1">{{ item.resume.user_name or 'Unknown Candidate' }}</h6>
+                            <h6 class="fw-bold mb-1">{{ item.resume.user_name or get_user_display_name(item.resume.user_id) or 'Unknown Candidate' }}</h6>
                             <small class="text-muted d-block">{{ item.resume.user_email }}</small>
                             <small class="text-muted">{{ item.resume.experience_years }} yrs exp · {{ item.resume.predicted_field }}</small>
                         </div>

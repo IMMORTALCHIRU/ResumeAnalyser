@@ -1,8 +1,11 @@
 import os
 import re
+import logging
 from PyPDF2 import PdfReader
 from docx import Document
 from app.config import Config
+
+logger = logging.getLogger(__name__)
 
 
 class ResumeParserService:
@@ -242,6 +245,58 @@ class ResumeParserService:
         return predicted
 
     @classmethod
+    def enhance_skills_with_embeddings(cls, extracted_skills: list, text: str) -> list:
+        """
+        Enhance extracted skills using semantic embeddings.
+        
+        Attempts to find semantically similar skills in the resume text
+        that may have been missed by keyword extraction due to spelling variants,
+        abbreviations, or synonyms.
+        
+        Args:
+            extracted_skills: Skills found by keyword extraction
+            text: Raw resume text
+            
+        Returns:
+            Enhanced skill list (deduplicated and sorted)
+        """
+        try:
+            from app.services.skill_embedding_service import get_skill_embedding_service
+            
+            embedding_service = get_skill_embedding_service()
+            enhanced = set(extracted_skills)
+            
+            # Common skill variations that might appear in text
+            skill_variations = [
+                'ML', 'AI', 'DL', 'NLP', 'CV', 'TF', 'PT',
+                'JS', 'TS', 'JS/TS', 'devops', 'ci/cd', 'cicd',
+                'cloud', 'serverless', 'database', 'relational',
+                'nosql', 'api', 'rest', 'graphql', 'microservices',
+                'containerization', 'orchestration', 'automation',
+                'scripting', 'programming', 'development',
+            ]
+            
+            text_lower = text.lower()
+            
+            # Check for skill variations in text
+            for variant in skill_variations:
+                if variant in text_lower:
+                    # Find semantically similar skills from our keyword database
+                    for category, skills in cls.SKILL_KEYWORDS.items():
+                        for skill in skills:
+                            similarity = embedding_service.semantic_similarity(
+                                variant,
+                                skill
+                            )
+                            if similarity >= 0.75:  # High semantic similarity
+                                enhanced.add(skill.title())
+            
+            return sorted(enhanced)
+        except Exception as e:
+            logger.warning(f"Skill enhancement via embeddings failed: {e}. Using keyword extraction only.")
+            return sorted(extracted_skills)
+
+    @classmethod
     def get_skill_gap(cls, predicted_field, current_skills):
         expected = cls.FIELD_SKILL_MAP.get(predicted_field, [])
         current_lower = [s.lower() for s in current_skills]
@@ -316,6 +371,9 @@ class ResumeParserService:
             return None
 
         skills = cls.extract_skills(raw_text)
+        # Enhance skills using semantic embeddings
+        skills = cls.enhance_skills_with_embeddings(skills, raw_text)
+        
         education = cls.extract_education(raw_text)
         certifications = cls.extract_certifications(raw_text)
         experience_years = cls.estimate_experience_years(raw_text)

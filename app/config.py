@@ -5,12 +5,28 @@ load_dotenv()
 
 class Config:
     SECRET_KEY = os.getenv('SECRET_KEY', 'dev-secret-key')
-    MONGO_URI = os.getenv('MONGO_URI', 'mongodb://localhost:27017/interview_prep_tracker')
+    MONGO_URI = os.getenv('MONGO_URI', 'mongodb://localhost:27017/smart_resume_analyser')
     UPLOAD_FOLDER = os.getenv('UPLOAD_FOLDER', 'app/static/uploads')
     MAX_CONTENT_LENGTH = int(os.getenv('MAX_CONTENT_LENGTH', 16777216))
     
     # Allowed file extensions
     ALLOWED_EXTENSIONS = {'pdf', 'docx'}
+    
+    # ===== EMBEDDING & SEMANTIC MATCHING CONFIG =====
+    # Model for semantic skill matching
+    EMBEDDING_MODEL = os.getenv('EMBEDDING_MODEL', 'all-MiniLM-L6-v2')
+    
+    # Thresholds for semantic matching
+    SEMANTIC_SIMILARITY_THRESHOLD = float(os.getenv('SEMANTIC_SIMILARITY_THRESHOLD', 0.75))
+    SKILL_ENHANCEMENT_THRESHOLD = float(os.getenv('SKILL_ENHANCEMENT_THRESHOLD', 0.75))
+    
+    # Hybrid scoring weights (must sum to 1.0)
+    KEYWORD_MATCH_WEIGHT = float(os.getenv('KEYWORD_MATCH_WEIGHT', 0.4))
+    SEMANTIC_MATCH_WEIGHT = float(os.getenv('SEMANTIC_MATCH_WEIGHT', 0.4))
+    EXPERIENCE_MATCH_WEIGHT = float(os.getenv('EXPERIENCE_MATCH_WEIGHT', 0.2))
+    
+    # Max cache size for embeddings (number of embeddings to cache in memory)
+    EMBEDDING_CACHE_MAX_SIZE = int(os.getenv('EMBEDDING_CACHE_MAX_SIZE', 10000))
     
     # Interview types
     INTERVIEW_TYPES = [

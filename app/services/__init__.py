@@ -1,3 +1,4 @@
 from app.services.resume_parser import ResumeParserService
 from app.services.recommendation_service import RecommendationService
 from app.services.job_matching_service import JobMatchingService
+from app.services.skill_embedding_service import SkillEmbeddingService, get_skill_embedding_service

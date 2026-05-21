@@ -23,10 +23,10 @@
                             {{ current_user.get_initials() }}
                         </div>
                         <div class="profile-info">
-                            <h2>{{ current_user.name }}</h2>
+                            <h2>{{ current_user.get_display_name() }}</h2>
                             <p>{{ current_user.email }}</p>
                             <div class="profile-meta">
-                                <span><i class="bi bi-calendar3"></i> Joined {{ current_user.date_joined.strftime('%B %Y') }}</span>
+                                <span><i class="bi bi-calendar3"></i> Joined {{ current_user.date_joined | format_datetime_ist('%B %Y') }}</span>
                                 {% if resume %}
                                 <span><i class="bi bi-briefcase"></i> {{ resume.candidate_level }}</span>
                                 <span><i class="bi bi-code-slash"></i> {{ resume.predicted_field }}</span>
